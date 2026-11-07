@@ -77,10 +77,10 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.10.2
-        version: 4.10.2(playwright-core@1.56.1)
+        version: 4.10.2(playwright-core@1.64.1)
       '@playwright/test':
-        specifier: 1.56.1
-        version: 1.56.1
+        specifier: 1.64.1
+        version: 1.64.1
       '@tailwindcss/vite':
         specifier: ^4.3.4
         version: 4.3.4(vite@8.3.6(@types/node@26.6.6)(jiti@2.7.0))
@@ -250,6 +250,10 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
+
+  '@babel/runtime@7.29.10':
+    resolution: {integrity: sha512-NpugTzbKgGrNe45Ui32cN8vCFFMxVtP/9rtfwv0nP5FRDAjvYBxJcLVpYA9mr1jxP6cnIT7x9LUzuDTbWYYNRA==}
+    engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.29.13':
     resolution: {integrity: sha512-v+oN26xP4YIlQsbQ/CbTH1WG5m/l/DjKKZNy/Kp3f/AFvbgt7Em/D0FeMM3O2hX0YzeN2M16W8lOpyhIkfCBcQ==}
@@ -434,9 +438,9 @@ packages:
   '@oxc-project/types@0.156.0':
     resolution: {integrity: sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==}
 
-  '@playwright/test@1.56.1':
-    resolution: {integrity: sha512-vSMYtL/zOcFpvJCW71Q/OEGQb7KYBPAdKh35WNSkaZA75JlAO8ED8UN6GUNTm3drWomcbcqRPFqQbLae8yBTdg==}
-    engines: {node: '>=18'}
+  '@playwright/test@1.64.1':
+    resolution: {integrity: sha512-IaYGml/nSOiZWROfPtuIL7neuu9qDOZ3TNvNljUIrhDMxiGTgPjzj/g9p9RxpS2tSepPDRY+UwAaEeiKtUvIAg==}
+    engines: {node: '>=20'}
     hasBin: true
 
   '@radix-ui/primitive@1.2.0':
@@ -1608,11 +1612,6 @@ packages:
     resolution: {integrity: sha512-KYAb4c9BJQI6QqGKthV68OHe0badztdXJWKo0WtBA9IuCFPTKvE5ZdUBglP833aMjhaSPNO4A5j/EkzZtGlKjA==}
     engines: {node: '>=14.14'}
 
-  fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -2172,14 +2171,14 @@ packages:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
     engines: {node: '>=8'}
 
-  playwright-core@1.56.1:
-    resolution: {integrity: sha512-hutraynyn31F+Bifme+Ps9Vq59hKuUCz7H1kDOcBs+2oGguKkWTU50bBWrtz34OUWmIwpBTWDxaRPXrIXkgvmQ==}
-    engines: {node: '>=18'}
+  playwright-core@1.64.1:
+    resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
+    engines: {node: '>=20'}
     hasBin: true
 
-  playwright@1.56.1:
-    resolution: {integrity: sha512-aFi5B0WovBHTEvpM3DzXTUaeN6eN0qWnTkKx4NQaH4Wvcmc153PdaY2UBdSYKaGYw+UyWXSVyxDUg5DoPEttjw==}
-    engines: {node: '>=18'}
+  playwright@1.64.1:
+    resolution: {integrity: sha512-HCrVhHr5QQuwYoswEUGTb7gGp522yflbv/ST8nF4sFWGuLjQCt17Q/EubpGGSNKYn1tsTCPZxqHhHCfVURu7UA==}
+    engines: {node: '>=20'}
     hasBin: true
 
   postcss-selector-parser@7.1.7:
@@ -2840,10 +2839,10 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@axe-core/playwright@4.10.2(playwright-core@1.56.1)':
+  '@axe-core/playwright@4.10.2(playwright-core@1.64.1)':
     dependencies:
       axe-core: 4.10.3
-      playwright-core: 1.56.1
+      playwright-core: 1.64.1
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -3007,6 +3006,8 @@ snapshots:
       '@babel/plugin-transform-typescript': 7.29.9(@babel/core@7.29.13)
     transitivePeerDependencies:
       - supports-color
+
+  '@babel/runtime@7.29.10': {}
 
   '@babel/runtime@7.29.13': {}
 
@@ -3210,9 +3211,9 @@ snapshots:
 
   '@oxc-project/types@0.156.0': {}
 
-  '@playwright/test@1.56.1':
+  '@playwright/test@1.64.1':
     dependencies:
-      playwright: 1.56.1
+      playwright: 1.64.1
 
   '@radix-ui/primitive@1.2.0': {}
 
@@ -3772,7 +3773,7 @@ snapshots:
   '@testing-library/dom@10.4.2':
     dependencies:
       '@babel/code-frame': 7.29.7
-      '@babel/runtime': 7.29.13
+      '@babel/runtime': 7.29.10
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -4315,9 +4316,6 @@ snapshots:
       jsonfile: 6.2.1
       universalify: 2.0.1
 
-  fsevents@2.3.2:
-    optional: true
-
   fsevents@2.3.3:
     optional: true
 
@@ -4777,13 +4775,11 @@ snapshots:
     dependencies:
       find-up: 3.0.0
 
-  playwright-core@1.56.1: {}
+  playwright-core@1.64.1: {}
 
-  playwright@1.56.1:
+  playwright@1.64.1:
     dependencies:
-      playwright-core: 1.56.1
-    optionalDependencies:
-      fsevents: 2.3.2
+      playwright-core: 1.64.1
 
   postcss-selector-parser@7.1.7:
     dependencies:
