@@ -1,0 +1,3 @@
+allowBuilds:
+  # Its postinstall only copies a browser service worker; tests run in node.
+  msw: false

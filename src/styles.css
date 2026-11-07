@@ -1,0 +1,247 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+/*
+ * AutoVogue Admin: "control room".
+ * Brand from the vendor dashboard: navy ink, Fraunces for display type and
+ * figures, Plus Jakarta Sans for UI (both loaded in routes/__root.tsx). The
+ * sidebar rail follows the theme: white with navy ink in light mode, deep
+ * navy in dark mode. Severity colours are kept for things that need a decision.
+ * Components come from the shadcn CLI (Base UI); theme them here.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Fraunces', ui-serif, Georgia, serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Control-room tokens */
+  --color-rail: var(--rail);
+  --color-rail-foreground: var(--rail-foreground);
+  --color-rail-muted: var(--rail-muted);
+  --color-rail-strong: var(--rail-strong);
+  --color-rail-accent: var(--rail-accent);
+  --color-rail-border: var(--rail-border);
+  --color-brand: var(--brand);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-staging: var(--staging);
+}
+
+:root {
+  --radius: 0.5rem;
+  --background: #f5f6f9;
+  --foreground: #0a0d14;
+  --card: #ffffff;
+  --card-foreground: #0a0d14;
+  --popover: #ffffff;
+  --popover-foreground: #0a0d14;
+  --primary: #28315e;
+  --primary-foreground: #ffffff;
+  --secondary: #eef0f6;
+  --secondary-foreground: #28315e;
+  --muted: #eef0f5;
+  --muted-foreground: #5d6685;
+  --accent: #e8ebf5;
+  --accent-foreground: #0a0d14;
+  --destructive: #c8102e;
+  --border: #e2e4ec;
+  --input: #d7dbe6;
+  --ring: #375dfb;
+  --chart-1: #375dfb;
+  --chart-2: #06ab6f;
+  --chart-3: #f2ae40;
+  --chart-4: #28315e;
+  --chart-5: #df1c41;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #28315e;
+  --sidebar-primary: #6f8bff;
+  --sidebar-primary-foreground: #0a0d14;
+  --sidebar-accent: #eef0f8;
+  --sidebar-accent-foreground: #0a0d14;
+  --sidebar-border: #e2e4ec;
+  --sidebar-ring: #6f8bff;
+
+  --rail: #ffffff;
+  --rail-foreground: #28315e;
+  --rail-strong: #0a0d14;
+  --rail-muted: #5d6685;
+  --rail-accent: #eef0f8;
+  --rail-border: #e2e4ec;
+  --rail-glow-1: rgb(55 93 251 / 0.07);
+  --brand: #28315e;
+  --danger: #c8102e;
+  --danger-soft: #fde8ec;
+  --warning: #8f5600;
+  --warning-soft: #fdf3e2;
+  --success: #067a52;
+  --success-soft: #e3f6ee;
+  --info: #175cd3;
+  --info-soft: #e9f1ff;
+  --staging: #f2ae40;
+}
+
+.dark {
+  --background: #0b0f19;
+  --foreground: #e7eaf3;
+  --card: #111725;
+  --card-foreground: #e7eaf3;
+  --popover: #151c2d;
+  --popover-foreground: #e7eaf3;
+  --primary: #8fa2ff;
+  --primary-foreground: #0b0f19;
+  --secondary: #1a2133;
+  --secondary-foreground: #e7eaf3;
+  --muted: #171e2e;
+  --muted-foreground: #98a2b3;
+  --accent: #1d2538;
+  --accent-foreground: #e7eaf3;
+  --destructive: #ff5c7a;
+  --border: #222b40;
+  --input: #2b3652;
+  --ring: #6f8bff;
+  --chart-1: #5b7cff;
+  --chart-2: #2fd193;
+  --chart-3: #f5bf63;
+  --chart-4: #b08cff;
+  --chart-5: #ff7a8a;
+  --sidebar: #070a12;
+  --sidebar-foreground: #e7eaf3;
+  --sidebar-primary: #6f8bff;
+  --sidebar-primary-foreground: #0b0f19;
+  --sidebar-accent: #151c31;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #141a2a;
+  --sidebar-ring: #6f8bff;
+
+  --rail: #070a12;
+  --rail-foreground: #e7eaf3;
+  --rail-strong: #ffffff;
+  --rail-muted: #7d86a3;
+  --rail-accent: #151c31;
+  --rail-border: #141a2a;
+  --rail-glow-1: rgb(55 93 251 / 0.18);
+  --brand: #c4cbef;
+  --danger: #ff6b85;
+  --danger-soft: rgb(255 92 122 / 0.12);
+  --warning: #f5bf63;
+  --warning-soft: rgb(245 191 99 / 0.12);
+  --success: #3ddc9b;
+  --success-soft: rgb(47 209 147 / 0.12);
+  --info: #8db4ff;
+  --info-soft: rgb(111 139 255 / 0.14);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--ring) 30%, transparent);
+  }
+}
+
+@layer components {
+  /* Money, counts and times line up in tables. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .font-display {
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+  /* Quiet engineering-paper texture behind the work surface. */
+  .surface-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+  .rail-glow {
+    background:
+      radial-gradient(120% 60% at 0% 0%, var(--rail-glow-1), transparent 60%),
+      radial-gradient(80% 50% at 100% 100%, rgb(242 174 64 / 0.06), transparent 60%),
+      var(--rail);
+  }
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded border border-border bg-muted px-1 font-mono text-[10px] text-muted-foreground;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}

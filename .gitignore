@@ -1,0 +1,15 @@
+node_modules
+dist
+.output
+.vinxi
+.tanstack
+*.local
+.env.local
+.DS_Store
+coverage
+
+# Playwright
+e2e/.env
+e2e/.auth/
+playwright-report/
+test-results/
