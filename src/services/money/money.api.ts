@@ -179,3 +179,33 @@ export interface WebhookRow {
 }
 /** Paystack webhooks as received, including ones whose signature failed (FIN-1). */
 export const useWebhooks = (reference?: string) => usePagedList<WebhookRow>([QUERY_KEYS.WEBHOOKS], API_ENDPOINTS.WEBHOOKS, { reference })
+
+/** Where all the money is, from the ledger (amounts in naira). */
+export interface PlatformBalances {
+  heldAtPaystack: number
+  inAutovogueBank: number
+  invoicedNotPaid: number
+  owedToVendorsEscrow: number
+  owedToVendorsWallets: number
+  owedToUsersWallets: number
+  cautionFeesHeld: number
+  vatOwed: number
+  commissionEarned: number
+  refundFeesKept: number
+  autovogueAtPaystack: number
+  checks: {
+    ledgerBalanced: boolean
+    ledgerDifference: number
+    userWalletsTotal: number
+    userWalletsMatch: boolean
+    vendorWalletsTotal: number
+    vendorWalletsMatch: boolean
+  }
+}
+
+export const usePlatformBalances = () =>
+  useQuery({
+    queryKey: [QUERY_KEYS.PLATFORM_BALANCES],
+    queryFn: () => get<PlatformBalances>(API_ENDPOINTS.PLATFORM_BALANCES),
+    refetchInterval: 60_000,
+  })

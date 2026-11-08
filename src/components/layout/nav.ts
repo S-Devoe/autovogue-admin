@@ -33,6 +33,7 @@ export const NAV: NavItem[] = [
   {
     label: 'Money', to: '/money/payouts', icon: Banknote, perms: ['payments.view', 'payouts.view', 'wallets.view'], badge: 'money',
     children: [
+      { label: 'Balances', to: '/money/balances', perms: ['payments.view'] },
       { label: 'Payouts', to: '/money/payouts', perms: ['payouts.view'] },
       { label: 'Payments', to: '/money/payments', perms: ['payments.view'] },
       { label: 'Refunds', to: '/money/refunds', perms: ['payouts.view'] },

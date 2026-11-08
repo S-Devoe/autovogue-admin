@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
   wallet: (userId: string) => `platform/wallets/${userId}`,
   walletAction: (userId: string, action: 'freeze' | 'unfreeze') => `platform/wallets/${userId}/${action}`,
   LEDGER: 'platform/ledger',
+  PLATFORM_BALANCES: 'platform/money/balances',
 
   // Disputes
   DISPUTES: 'platform/disputes',

@@ -22,6 +22,7 @@ export const QUERY_KEYS = {
   RECON_MISMATCHES: 'ReconMismatches',
   WALLET: 'Wallet',
   LEDGER: 'Ledger',
+  PLATFORM_BALANCES: 'PlatformBalances',
   DISPUTES: 'Disputes',
   DISPUTE: 'Dispute',
   USERS: 'Users',

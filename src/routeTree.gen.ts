@@ -21,6 +21,7 @@ import { Route as AppDisputesIndexRouteImport } from './routes/_app/disputes/ind
 import { Route as AppDisputesIdRouteImport } from './routes/_app/disputes/$id'
 import { Route as AppListingsIndexRouteImport } from './routes/_app/listings/index'
 import { Route as AppListingsIdRouteImport } from './routes/_app/listings/$id'
+import { Route as AppMoneyBalancesRouteImport } from './routes/_app/money/balances'
 import { Route as AppMoneyLedgerRouteImport } from './routes/_app/money/ledger'
 import { Route as AppMoneyPaymentsRouteImport } from './routes/_app/money/payments'
 import { Route as AppMoneyPayoutsRouteImport } from './routes/_app/money/payouts'
@@ -113,6 +114,11 @@ const AppListingsIndexRoute = AppListingsIndexRouteImport.update({
 const AppListingsIdRoute = AppListingsIdRouteImport.update({
   id: '/listings/$id',
   path: '/listings/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMoneyBalancesRoute = AppMoneyBalancesRouteImport.update({
+  id: '/money/balances',
+  path: '/money/balances',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMoneyLedgerRoute = AppMoneyLedgerRouteImport.update({
@@ -297,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$id': typeof AppBookingsIdRoute
   '/disputes/$id': typeof AppDisputesIdRoute
   '/listings/$id': typeof AppListingsIdRoute
+  '/money/balances': typeof AppMoneyBalancesRoute
   '/money/ledger': typeof AppMoneyLedgerRoute
   '/money/payments': typeof AppMoneyPaymentsRoute
   '/money/payouts': typeof AppMoneyPayoutsRoute
@@ -344,6 +351,7 @@ export interface FileRoutesByTo {
   '/bookings/$id': typeof AppBookingsIdRoute
   '/disputes/$id': typeof AppDisputesIdRoute
   '/listings/$id': typeof AppListingsIdRoute
+  '/money/balances': typeof AppMoneyBalancesRoute
   '/money/ledger': typeof AppMoneyLedgerRoute
   '/money/payments': typeof AppMoneyPaymentsRoute
   '/money/payouts': typeof AppMoneyPayoutsRoute
@@ -393,6 +401,7 @@ export interface FileRoutesById {
   '/_app/bookings/$id': typeof AppBookingsIdRoute
   '/_app/disputes/$id': typeof AppDisputesIdRoute
   '/_app/listings/$id': typeof AppListingsIdRoute
+  '/_app/money/balances': typeof AppMoneyBalancesRoute
   '/_app/money/ledger': typeof AppMoneyLedgerRoute
   '/_app/money/payments': typeof AppMoneyPaymentsRoute
   '/_app/money/payouts': typeof AppMoneyPayoutsRoute
@@ -442,6 +451,7 @@ export interface FileRouteTypes {
     | '/bookings/$id'
     | '/disputes/$id'
     | '/listings/$id'
+    | '/money/balances'
     | '/money/ledger'
     | '/money/payments'
     | '/money/payouts'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/bookings/$id'
     | '/disputes/$id'
     | '/listings/$id'
+    | '/money/balances'
     | '/money/ledger'
     | '/money/payments'
     | '/money/payouts'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/_app/bookings/$id'
     | '/_app/disputes/$id'
     | '/_app/listings/$id'
+    | '/_app/money/balances'
     | '/_app/money/ledger'
     | '/_app/money/payments'
     | '/_app/money/payouts'
@@ -668,6 +680,13 @@ declare module '@tanstack/react-router' {
       path: '/listings/$id'
       fullPath: '/listings/$id'
       preLoaderRoute: typeof AppListingsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/money/balances': {
+      id: '/_app/money/balances'
+      path: '/money/balances'
+      fullPath: '/money/balances'
+      preLoaderRoute: typeof AppMoneyBalancesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/money/ledger': {
@@ -916,6 +935,7 @@ interface AppRouteChildren {
   AppBookingsIdRoute: typeof AppBookingsIdRoute
   AppDisputesIdRoute: typeof AppDisputesIdRoute
   AppListingsIdRoute: typeof AppListingsIdRoute
+  AppMoneyBalancesRoute: typeof AppMoneyBalancesRoute
   AppMoneyLedgerRoute: typeof AppMoneyLedgerRoute
   AppMoneyPaymentsRoute: typeof AppMoneyPaymentsRoute
   AppMoneyPayoutsRoute: typeof AppMoneyPayoutsRoute
@@ -960,6 +980,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBookingsIdRoute: AppBookingsIdRoute,
   AppDisputesIdRoute: AppDisputesIdRoute,
   AppListingsIdRoute: AppListingsIdRoute,
+  AppMoneyBalancesRoute: AppMoneyBalancesRoute,
   AppMoneyLedgerRoute: AppMoneyLedgerRoute,
   AppMoneyPaymentsRoute: AppMoneyPaymentsRoute,
   AppMoneyPayoutsRoute: AppMoneyPayoutsRoute,
