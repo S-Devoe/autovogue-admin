@@ -31,6 +31,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
   const { pathname } = useLocation()
   const { data: attention } = useAttention()
   const visible = (i: { perms?: string[] }) => !i.perms || can(...i.perms)
+  const counts = Object.fromEntries((attention?.items ?? []).map((i) => [i.key, i.count]))
 
   return (
     <nav className="rail-glow flex h-full flex-col border-r border-rail-border text-rail-foreground">
@@ -43,7 +44,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <div className="flex-1 overflow-y-auto px-3 pb-6">
         {NAV.filter(visible).map((item) => (
-          <RailItem key={item.label} item={item} pathname={pathname} badge={item.badge ? attention?.badges[item.badge] : undefined} visible={visible} onNavigate={onNavigate} />
+          <RailItem key={item.label} item={item} pathname={pathname} badge={item.badge ? attention?.badges[item.badge] : undefined} counts={counts} visible={visible} onNavigate={onNavigate} />
         ))}
       </div>
       <p className="px-5 pb-4 text-[10px] text-rail-muted">Every action here is logged.</p>
@@ -51,10 +52,16 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-function RailItem({ item, pathname, badge, visible, onNavigate }: {
+function CountBadge({ n }: { n?: number }) {
+  if (!n) return null
+  return <span className="rounded-full bg-staging px-1.5 py-px text-[10px] font-bold text-[#0a0d14] tabular">{n > 99 ? '99+' : n}</span>
+}
+
+function RailItem({ item, pathname, badge, counts, visible, onNavigate }: {
   item: NavItem
   pathname: string
   badge?: number
+  counts: Record<string, number>
   visible: (i: { perms?: string[] }) => boolean
   onNavigate?: () => void
 }) {
@@ -73,7 +80,7 @@ function RailItem({ item, pathname, badge, visible, onNavigate }: {
       >
         <item.icon className="size-4 opacity-80" />
         <span className="flex-1">{item.label}</span>
-        {!!badge && <span className="rounded-full bg-staging px-1.5 py-px text-[10px] font-bold text-[#0a0d14] tabular">{badge > 99 ? '99+' : badge}</span>}
+        <CountBadge n={badge} />
       </Link>
       {active && children && children.length > 1 && (
         <div className="ml-[22px] mt-0.5 grid border-l border-rail-border pl-3">
@@ -82,9 +89,10 @@ function RailItem({ item, pathname, badge, visible, onNavigate }: {
               key={c.to}
               to={c.to}
               onClick={onNavigate}
-              className={cn('rounded-md px-2 py-1.5 text-[12px] text-rail-muted transition hover:text-rail-strong', pathname.startsWith(c.to) && 'font-semibold text-rail-strong')}
+              className={cn('flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] text-rail-muted transition hover:text-rail-strong', pathname.startsWith(c.to) && 'font-semibold text-rail-strong')}
             >
-              {c.label}
+              <span className="flex-1">{c.label}</span>
+              <CountBadge n={c.attention?.reduce((sum, k) => sum + (counts[k] ?? 0), 0)} />
             </Link>
           ))}
         </div>

@@ -18,13 +18,14 @@ import { useContent } from '@/services/settings/settings.api'
 import { useCan } from '@/hooks/use-can'
 import { age, dateOnly, dateTime, titleCase } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { useAttention } from '@/services/overview/overview.api'
 
 const QUEUES = {
-  users: { title: 'Users', kind: 'user', desc: 'User KYC (NIN, BVN, licence, passport) needing a manual decision.' },
-  hosts: { title: 'Individual hosts', kind: 'tenant', desc: 'Host KYC documents needing a manual decision.' },
-  fleet: { title: 'Fleet partners', kind: 'tenant', desc: 'CAC certificates and director IDs. Approving the CAC sets the business name payouts must match.' },
-  drivers: { title: 'Drivers', kind: 'driver', desc: "Drivers' licences uploaded by vendors." },
-  vehicles: { title: 'Vehicle documents', kind: 'vehicle', desc: 'Proof of ownership, insurance and roadworthiness. A car is bookable only with all three approved.' },
+  users: { title: 'Users', attention: 'verify_renters', kind: 'user', desc: 'User KYC (NIN, BVN, licence, passport) needing a manual decision.' },
+  hosts: { title: 'Individual hosts', attention: 'verify_hosts', kind: 'tenant', desc: 'Host KYC documents needing a manual decision.' },
+  fleet: { title: 'Fleet partners', attention: 'verify_fleet', kind: 'tenant', desc: 'CAC certificates and director IDs. Approving the CAC sets the business name payouts must match.' },
+  drivers: { title: 'Drivers', attention: 'verify_drivers', kind: 'driver', desc: "Drivers' licences uploaded by vendors." },
+  vehicles: { title: 'Vehicle documents', attention: 'verify_vehicles', kind: 'vehicle', desc: 'Proof of ownership, insurance and roadworthiness. A car is bookable only with all three approved.' },
 } as const
 
 type QueueKey = keyof typeof QUEUES
@@ -175,11 +176,16 @@ function VerificationQueue() {
 }
 
 function QueueTabs({ active }: { active: QueueKey }) {
+  const { data: attention } = useAttention()
+  const count = (key: string) => attention?.items.find((i) => i.key === key)?.count ?? 0
   return (
     <div className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
       {(Object.keys(QUEUES) as QueueKey[]).map((q) => (
-        <Link key={q} to="/verification/$queue" params={{ queue: q }} className={cn('rounded-md px-2.5 py-1 text-xs font-semibold text-muted-foreground transition', active === q && 'bg-card text-foreground shadow-sm')}>
+        <Link key={q} to="/verification/$queue" params={{ queue: q }} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold text-muted-foreground transition', active === q && 'bg-card text-foreground shadow-sm')}>
           {QUEUES[q].title}
+          {count(QUEUES[q].attention) > 0 && (
+            <span className="rounded-full bg-staging px-1.5 py-px text-[10px] font-bold text-[#0a0d14] tabular">{count(QUEUES[q].attention)}</span>
+          )}
         </Link>
       ))}
     </div>

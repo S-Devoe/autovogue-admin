@@ -10,7 +10,15 @@ export interface NavItem {
   /** Any one of these permissions shows the item. */
   perms?: string[]
   badge?: string
-  children?: { label: string; to: string; perms?: string[] }[]
+  children?: NavChild[]
+}
+
+export interface NavChild {
+  label: string
+  to: string
+  perms?: string[]
+  /** Overview attention item keys whose counts make up this page's badge. */
+  attention?: string[]
 }
 
 /** Sidebar sections (PRD section 4). */
@@ -19,11 +27,11 @@ export const NAV: NavItem[] = [
   {
     label: 'Verification', to: '/verification/users', icon: BadgeCheck, perms: ['verifications.view'], badge: 'verification',
     children: [
-      { label: 'Users', to: '/verification/users' },
-      { label: 'Hosts', to: '/verification/hosts' },
-      { label: 'Fleet partners', to: '/verification/fleet' },
-      { label: 'Drivers', to: '/verification/drivers' },
-      { label: 'Vehicles', to: '/verification/vehicles' },
+      { label: 'Users', to: '/verification/users', attention: ['verify_renters'] },
+      { label: 'Hosts', to: '/verification/hosts', attention: ['verify_hosts'] },
+      { label: 'Fleet partners', to: '/verification/fleet', attention: ['verify_fleet'] },
+      { label: 'Drivers', to: '/verification/drivers', attention: ['verify_drivers'] },
+      { label: 'Vehicles', to: '/verification/vehicles', attention: ['verify_vehicles'] },
       { label: 'Prembly checks', to: '/verification/pending-checks' },
       { label: 'Expiring', to: '/verification/expiring' },
       { label: 'Name changes', to: '/verification/name-changes' },
@@ -34,10 +42,10 @@ export const NAV: NavItem[] = [
     label: 'Money', to: '/money/payouts', icon: Banknote, perms: ['payments.view', 'payouts.view', 'wallets.view'], badge: 'money',
     children: [
       { label: 'Balances', to: '/money/balances', perms: ['payments.view'] },
-      { label: 'Payouts', to: '/money/payouts', perms: ['payouts.view'] },
+      { label: 'Payouts', to: '/money/payouts', perms: ['payouts.view'], attention: ['failed_payouts'] },
       { label: 'Payments', to: '/money/payments', perms: ['payments.view'] },
       { label: 'Refunds', to: '/money/refunds', perms: ['payouts.view'] },
-      { label: 'Reconciliation', to: '/money/reconciliation', perms: ['payments.view'] },
+      { label: 'Reconciliation', to: '/money/reconciliation', perms: ['payments.view'], attention: ['mismatches'] },
       { label: 'Wallets', to: '/money/wallets', perms: ['wallets.view'] },
       { label: 'Commission ledger', to: '/money/ledger', perms: ['payments.view'] },
     ],
@@ -66,7 +74,7 @@ export const NAV: NavItem[] = [
     label: 'Settings', to: '/settings/platform', icon: Settings2, badge: 'settings',
     children: [
       { label: 'Platform', to: '/settings/platform', perms: ['config.view'] },
-      { label: 'Approvals', to: '/settings/approvals', perms: ['config.view', 'config.approve', 'money.approve', 'roles.manage', 'accounts.suspend'] },
+      { label: 'Approvals', to: '/settings/approvals', attention: ['approvals'], perms: ['config.view', 'config.approve', 'money.approve', 'roles.manage', 'accounts.suspend'] },
       { label: 'Staff', to: '/settings/staff', perms: ['staff.view'] },
       { label: 'Roles', to: '/settings/roles', perms: ['roles.view'] },
       { label: 'Audit log', to: '/settings/audit', perms: ['audit.view_own', 'audit.view_all'] },
