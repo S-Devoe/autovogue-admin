@@ -48,6 +48,8 @@ export const QUERY_KEYS = {
   CAMPAIGN: 'Campaign',
   CAMPAIGN_PREVIEW: 'CampaignPreview',
   CAMPAIGN_STATES: 'CampaignStates',
+  IN_APP_MESSAGES: 'InAppMessages',
+  MY_IN_APP: 'MyInApp',
   DSR: 'Dsr',
   BREACHES: 'Breaches',
   NAME_CHANGES: 'NameChanges',

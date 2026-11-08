@@ -119,6 +119,13 @@ export const API_ENDPOINTS = {
   CAMPAIGN_STATES: 'platform/campaigns/states',
   CAMPAIGN_PREVIEW: 'platform/campaigns/preview',
   CAMPAIGN_TEST: 'platform/campaigns/test',
+  IN_APP_MESSAGES: 'platform/in-app-messages',
+  inAppMessage: (id: string) => `platform/in-app-messages/${id}`,
+  inAppMessageStatus: (id: string) => `platform/in-app-messages/${id}/status`,
+  PLATFORM_UPLOADS: 'platform/uploads',
+  // The signed-in staff member's own in-app messages.
+  MY_IN_APP_NEXT: 'auth/platform/in-app-messages/next',
+  myInAppEvent: (id: string) => `auth/platform/in-app-messages/${id}/events`,
   campaign: (id: string) => `platform/campaigns/${id}`,
   campaignAction: (id: string, action: 'pause' | 'resume' | 'cancel') => `platform/campaigns/${id}/${action}`,
   CONTENT: 'platform/content',

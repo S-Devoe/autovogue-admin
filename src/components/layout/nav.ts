@@ -58,6 +58,7 @@ export const NAV: NavItem[] = [
     children: [
       { label: 'Email campaigns', to: '/comms/email' },
       { label: 'Push campaigns', to: '/comms/push' },
+      { label: 'In-app messages', to: '/comms/in-app' },
     ],
   },
   {

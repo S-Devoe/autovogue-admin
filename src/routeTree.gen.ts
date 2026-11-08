@@ -46,6 +46,9 @@ import { Route as AppVerificationPendingChecksRouteImport } from './routes/_app/
 import { Route as AppCommsChannelIndexRouteImport } from './routes/_app/comms/$channel/index'
 import { Route as AppCommsChannelIdRouteImport } from './routes/_app/comms/$channel/$id'
 import { Route as AppCommsChannelNewRouteImport } from './routes/_app/comms/$channel/new'
+import { Route as AppCommsInAppIndexRouteImport } from './routes/_app/comms/in-app/index'
+import { Route as AppCommsInAppIdRouteImport } from './routes/_app/comms/in-app/$id'
+import { Route as AppCommsInAppNewRouteImport } from './routes/_app/comms/in-app/new'
 import { Route as AppPeopleUsersIndexRouteImport } from './routes/_app/people/users/index'
 import { Route as AppPeopleUsersIdRouteImport } from './routes/_app/people/users/$id'
 import { Route as AppPeopleVendorsIndexRouteImport } from './routes/_app/people/vendors/index'
@@ -239,6 +242,21 @@ const AppCommsChannelNewRoute = AppCommsChannelNewRouteImport.update({
   path: '/comms/$channel/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCommsInAppIndexRoute = AppCommsInAppIndexRouteImport.update({
+  id: '/comms/in-app/',
+  path: '/comms/in-app/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommsInAppIdRoute = AppCommsInAppIdRouteImport.update({
+  id: '/comms/in-app/$id',
+  path: '/comms/in-app/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommsInAppNewRoute = AppCommsInAppNewRouteImport.update({
+  id: '/comms/in-app/new',
+  path: '/comms/in-app/new',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPeopleUsersIndexRoute = AppPeopleUsersIndexRouteImport.update({
   id: '/people/users/',
   path: '/people/users/',
@@ -306,10 +324,13 @@ export interface FileRoutesByFullPath {
   '/reports/': typeof AppReportsIndexRoute
   '/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/comms/$channel/new': typeof AppCommsChannelNewRoute
+  '/comms/in-app/$id': typeof AppCommsInAppIdRoute
+  '/comms/in-app/new': typeof AppCommsInAppNewRoute
   '/people/users/$id': typeof AppPeopleUsersIdRoute
   '/people/vendors/$id': typeof AppPeopleVendorsIdRoute
   '/settings/roles/$id': typeof AppSettingsRolesIdRoute
   '/comms/$channel/': typeof AppCommsChannelIndexRoute
+  '/comms/in-app/': typeof AppCommsInAppIndexRoute
   '/people/users/': typeof AppPeopleUsersIndexRoute
   '/people/vendors/': typeof AppPeopleVendorsIndexRoute
   '/settings/roles/': typeof AppSettingsRolesIndexRoute
@@ -350,10 +371,13 @@ export interface FileRoutesByTo {
   '/reports': typeof AppReportsIndexRoute
   '/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/comms/$channel/new': typeof AppCommsChannelNewRoute
+  '/comms/in-app/$id': typeof AppCommsInAppIdRoute
+  '/comms/in-app/new': typeof AppCommsInAppNewRoute
   '/people/users/$id': typeof AppPeopleUsersIdRoute
   '/people/vendors/$id': typeof AppPeopleVendorsIdRoute
   '/settings/roles/$id': typeof AppSettingsRolesIdRoute
   '/comms/$channel': typeof AppCommsChannelIndexRoute
+  '/comms/in-app': typeof AppCommsInAppIndexRoute
   '/people/users': typeof AppPeopleUsersIndexRoute
   '/people/vendors': typeof AppPeopleVendorsIndexRoute
   '/settings/roles': typeof AppSettingsRolesIndexRoute
@@ -396,10 +420,13 @@ export interface FileRoutesById {
   '/_app/reports/': typeof AppReportsIndexRoute
   '/_app/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/_app/comms/$channel/new': typeof AppCommsChannelNewRoute
+  '/_app/comms/in-app/$id': typeof AppCommsInAppIdRoute
+  '/_app/comms/in-app/new': typeof AppCommsInAppNewRoute
   '/_app/people/users/$id': typeof AppPeopleUsersIdRoute
   '/_app/people/vendors/$id': typeof AppPeopleVendorsIdRoute
   '/_app/settings/roles/$id': typeof AppSettingsRolesIdRoute
   '/_app/comms/$channel/': typeof AppCommsChannelIndexRoute
+  '/_app/comms/in-app/': typeof AppCommsInAppIndexRoute
   '/_app/people/users/': typeof AppPeopleUsersIndexRoute
   '/_app/people/vendors/': typeof AppPeopleVendorsIndexRoute
   '/_app/settings/roles/': typeof AppSettingsRolesIndexRoute
@@ -442,10 +469,13 @@ export interface FileRouteTypes {
     | '/reports/'
     | '/comms/$channel/$id'
     | '/comms/$channel/new'
+    | '/comms/in-app/$id'
+    | '/comms/in-app/new'
     | '/people/users/$id'
     | '/people/vendors/$id'
     | '/settings/roles/$id'
     | '/comms/$channel/'
+    | '/comms/in-app/'
     | '/people/users/'
     | '/people/vendors/'
     | '/settings/roles/'
@@ -486,10 +516,13 @@ export interface FileRouteTypes {
     | '/reports'
     | '/comms/$channel/$id'
     | '/comms/$channel/new'
+    | '/comms/in-app/$id'
+    | '/comms/in-app/new'
     | '/people/users/$id'
     | '/people/vendors/$id'
     | '/settings/roles/$id'
     | '/comms/$channel'
+    | '/comms/in-app'
     | '/people/users'
     | '/people/vendors'
     | '/settings/roles'
@@ -531,10 +564,13 @@ export interface FileRouteTypes {
     | '/_app/reports/'
     | '/_app/comms/$channel/$id'
     | '/_app/comms/$channel/new'
+    | '/_app/comms/in-app/$id'
+    | '/_app/comms/in-app/new'
     | '/_app/people/users/$id'
     | '/_app/people/vendors/$id'
     | '/_app/settings/roles/$id'
     | '/_app/comms/$channel/'
+    | '/_app/comms/in-app/'
     | '/_app/people/users/'
     | '/_app/people/vendors/'
     | '/_app/settings/roles/'
@@ -809,6 +845,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCommsChannelNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/comms/in-app/': {
+      id: '/_app/comms/in-app/'
+      path: '/comms/in-app'
+      fullPath: '/comms/in-app/'
+      preLoaderRoute: typeof AppCommsInAppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/comms/in-app/$id': {
+      id: '/_app/comms/in-app/$id'
+      path: '/comms/in-app/$id'
+      fullPath: '/comms/in-app/$id'
+      preLoaderRoute: typeof AppCommsInAppIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/comms/in-app/new': {
+      id: '/_app/comms/in-app/new'
+      path: '/comms/in-app/new'
+      fullPath: '/comms/in-app/new'
+      preLoaderRoute: typeof AppCommsInAppNewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/people/users/': {
       id: '/_app/people/users/'
       path: '/people/users'
@@ -886,10 +943,13 @@ interface AppRouteChildren {
   AppReportsIndexRoute: typeof AppReportsIndexRoute
   AppCommsChannelIdRoute: typeof AppCommsChannelIdRoute
   AppCommsChannelNewRoute: typeof AppCommsChannelNewRoute
+  AppCommsInAppIdRoute: typeof AppCommsInAppIdRoute
+  AppCommsInAppNewRoute: typeof AppCommsInAppNewRoute
   AppPeopleUsersIdRoute: typeof AppPeopleUsersIdRoute
   AppPeopleVendorsIdRoute: typeof AppPeopleVendorsIdRoute
   AppSettingsRolesIdRoute: typeof AppSettingsRolesIdRoute
   AppCommsChannelIndexRoute: typeof AppCommsChannelIndexRoute
+  AppCommsInAppIndexRoute: typeof AppCommsInAppIndexRoute
   AppPeopleUsersIndexRoute: typeof AppPeopleUsersIndexRoute
   AppPeopleVendorsIndexRoute: typeof AppPeopleVendorsIndexRoute
   AppSettingsRolesIndexRoute: typeof AppSettingsRolesIndexRoute
@@ -927,10 +987,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppReportsIndexRoute: AppReportsIndexRoute,
   AppCommsChannelIdRoute: AppCommsChannelIdRoute,
   AppCommsChannelNewRoute: AppCommsChannelNewRoute,
+  AppCommsInAppIdRoute: AppCommsInAppIdRoute,
+  AppCommsInAppNewRoute: AppCommsInAppNewRoute,
   AppPeopleUsersIdRoute: AppPeopleUsersIdRoute,
   AppPeopleVendorsIdRoute: AppPeopleVendorsIdRoute,
   AppSettingsRolesIdRoute: AppSettingsRolesIdRoute,
   AppCommsChannelIndexRoute: AppCommsChannelIndexRoute,
+  AppCommsInAppIndexRoute: AppCommsInAppIndexRoute,
   AppPeopleUsersIndexRoute: AppPeopleUsersIndexRoute,
   AppPeopleVendorsIndexRoute: AppPeopleVendorsIndexRoute,
   AppSettingsRolesIndexRoute: AppSettingsRolesIndexRoute,

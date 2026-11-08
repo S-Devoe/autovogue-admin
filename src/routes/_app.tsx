@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { AppShell } from '@/components/layout/app-shell'
+import { StaffInAppMessages } from '@/components/comms/in-app-bits'
 import { meQueryOptions } from '@/services/auth/auth.api'
 
 /** Every signed-in screen. No session: go to sign-in and come back after. */
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_app')({
   component: () => (
     <AppShell>
       <Outlet />
+      <StaffInAppMessages />
     </AppShell>
   ),
 })

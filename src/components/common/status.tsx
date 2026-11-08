@@ -42,6 +42,8 @@ const TONES: Record<string, Tone> = {
   draft: 'neutral', sending: 'info', sent: 'success',
   // campaigns
   scheduled: 'brand', paused: 'warning',
+  // in-app messages
+  live: 'success', ended: 'neutral', expired: 'neutral',
 }
 
 export function StatusPill({ value, label }: { value?: string | null; label?: string }) {

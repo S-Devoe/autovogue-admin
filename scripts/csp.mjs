@@ -38,7 +38,8 @@ const policy = [
   "font-src 'self' https://fonts.gstatic.com",
   `img-src 'self' data: blob: https://*.autovogue.app https://*.r2.cloudflarestorage.com https://*.r2.dev ${mode === 'production' ? '' : 'http://localhost:*'}`.trim(),
   'frame-src https://*.r2.cloudflarestorage.com',
-  `connect-src 'self' ${apiOrigin} ${sentryOrigin}`.trim(),
+  // R2: in-app message artwork is uploaded straight to storage (presigned PUT).
+  `connect-src 'self' ${apiOrigin} https://*.r2.cloudflarestorage.com ${sentryOrigin}`.trim(),
   "base-uri 'none'",
   "form-action 'self'",
   "object-src 'none'",
