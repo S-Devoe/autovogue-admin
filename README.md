@@ -61,6 +61,93 @@ src/components/layout/ app shell, navigation (nav.ts), command palette (Cmd/Ctrl
 src/hooks/use-can.ts   permission checks for hiding UI
 ```
 
+## Service charges, explained simply
+
+### Where to change them
+
+Go to **Settings > Platform**. Find the row you want and click **Change**. Type the new number and a reason, then click **Send for approval**. Another staff member must approve it in **Settings > Approvals** (you can't approve your own change). After that, the API starts using the new number within a minute. Every change is listed in the **History** panel on the same page.
+
+### What "bps" means
+
+Imagine a pizza cut into 100 slices. One slice is **1 percent** (1%).
+
+Now imagine each of those slices is cut into 100 tiny crumbs. One crumb is **1 basis point**, written **1 bps**.
+
+So:
+
+- 1 bps is one tiny crumb (0.01%)
+- 100 bps is one whole slice (1%)
+- 300 bps is three slices (3%)
+- 700 bps is seven slices (7%)
+- 3000 bps is thirty slices (30%), the biggest number the page accepts
+
+**To turn a percent into bps, multiply by 100.** 2.5% becomes 250 bps. **To turn bps into a percent, divide by 100.** 450 bps becomes 4.5%.
+
+Why crumbs and not slices? Computers are bad at numbers with dots in them (like 2.5), and tiny rounding mistakes add up when the numbers are money. Whole numbers like 250 never get rounded wrong.
+
+### Two charges, not one
+
+Every booking has **two** service charges:
+
+1. **The renter/user fee** (rows called "Renter/User fee" on the page). The renter is the person using the AutoVogue app to rent a car. They pay this fee **on top of** the rental price.
+2. **The vendor commission** (rows called "Vendor commission"). It is **taken out of** the vendor's share.
+
+Think of a lemonade stand that sells through us. The buyer pays a little extra to us, and the lemonade seller gives us a little of what they earn. We keep both bits.
+
+### Which number gets used
+
+The page has a renter/user fee and a vendor commission for each kind of vendor, plus a backup pair:
+
+| Row on the page | Key | Used for |
+|---|---|---|
+| Renter/User fee: fleet partner cars | `commission.fleet_partner.customer_bps` | renters booking a business's (fleet partner's) car |
+| Vendor commission: fleet partners | `commission.fleet_partner.vendor_bps` | fleet partners |
+| Renter/User fee: individual host cars | `commission.individual_host.customer_bps` | renters booking an individual host's car |
+| Vendor commission: individual hosts | `commission.individual_host.vendor_bps` | individual hosts |
+| Renter/User fee: general fallback | `commission.customer_bps` | backup when a vendor type has no number of its own |
+| Vendor commission: general fallback | `commission.vendor_bps` | backup when a vendor type has no number of its own |
+
+The API checks in this order and stops at the first one it finds:
+
+1. **A special rate for this one vendor** (set on the vendor's page under People > Vendors, also needs a second approver). This is a single total number that the API splits: 30% of it becomes the renter/user fee and 70% becomes the vendor commission. For example, 1000 bps becomes a 300 bps renter/user fee and a 700 bps vendor commission.
+2. **The rate for the vendor's type** (fleet partner or individual host).
+3. **The general fallback rate.**
+4. **The built-in default:** 300 bps (3%) renter/user fee and 700 bps (7%) vendor commission.
+
+Every booking remembers the rates it was made with. Changing a rate only affects **new** bookings, never ones already paid.
+
+### VAT sits on top of our charges
+
+The government takes **7.5% VAT on our service charges** (not on the rental price). That VAT is added to each charge.
+
+### A full example
+
+A renter (app user) books a car whose rental price is **₦20,000**, with the default rates (300 bps renter/user fee, 700 bps vendor commission):
+
+**What the renter/user pays**
+
+| | |
+|---|---|
+| Rental price | ₦20,000.00 |
+| Renter/user fee: 3% of ₦20,000 | ₦600.00 |
+| VAT on the renter/user fee: 7.5% of ₦600 | ₦45.00 |
+| **Total, before any caution fee** | **₦20,645.00** |
+
+**What the vendor gets**
+
+| | |
+|---|---|
+| Rental price | ₦20,000.00 |
+| Vendor commission: 7% of ₦20,000 | minus ₦1,400.00 |
+| VAT on the commission: 7.5% of ₦1,400 | minus ₦105.00 |
+| **Vendor's share** | **₦18,495.00** |
+
+**What AutoVogue keeps:** ₦600 + ₦1,400 = ₦2,000 in charges. The ₦150 VAT (₦45 + ₦105) belongs to the government, not to us.
+
+The caution fee is extra money the user pays as a promise to bring the car back safely. It is not a service charge, and the user always gets it back in their wallet 24 hours after return, unless there is a dispute.
+
+Vendors only ever see the rental price, their commission percentage and their share. They never see the renter/user fee or VAT.
+
 ## Rules for contributors
 
 - **The API decides.** `useCan()` only hides buttons; every request is checked server-side.
