@@ -283,6 +283,20 @@ function Review({ item, onPrev, onNext, hasPrev, hasNext }: { item: Item; onPrev
             ...(item.expiresAt ? ([[item.isRenewal ? 'New document expires' : 'Expires', dateOnly(item.expiresAt)]] as [string, React.ReactNode][]) : []),
           ]}
         />
+        {people && pending && item.provider === 'manual' && !item.fileRef && (
+          <div className="rounded-lg border border-warning/30 bg-warning-soft p-3 text-xs text-warning">
+            <p className="font-semibold">Why is this here with nothing to look at?</p>
+            <p className="mt-0.5">
+              The vendor typed an ID number instead of uploading a picture. Prembly (the robot that checks ID numbers) only checks an
+              individual host's own ID and a fleet partner's CAC number, so this one came straight to people. We never keep ID numbers
+              (NDPR), so there is no file and no Prembly result. It stays Pending until someone decides.
+            </p>
+            <p className="mt-1">
+              Approve only if you are sure who this person is (for example after a call with the vendor), and type their legal name.
+              Otherwise reject it and ask the vendor to verify with their CAC number, or to upload a picture of the ID.
+            </p>
+          </div>
+        )}
         {item.rejectionReason && <p className="rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">{item.revokedAt ? 'Revoked' : 'Rejected'}: {item.rejectionReason}</p>}
         {item.secondReviewBy && (
           <p className="rounded-md bg-info-soft px-3 py-2 text-xs text-info">

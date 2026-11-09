@@ -148,6 +148,44 @@ The caution fee is extra money the user pays as a promise to bring the car back 
 
 Vendors only ever see the rental price, their commission percentage and their share. They never see the renter/user fee or VAT.
 
+## Verification, explained simply
+
+### Two ways a document gets checked
+
+Think of a school checking that you really are who you say you are.
+
+1. **The robot check (Prembly).** You tell the robot your ID number. It looks it up in the government's records and says "yes, the name matches" or "no, it doesn't", in a few seconds. On the page this shows as **Mode: Synchronous** and **Provider: prembly**, with the result under **Prembly match**.
+2. **The people check (you, the staff).** The document comes to a queue on the Verification page, and a staff member looks at it and clicks **Approve** or **Reject**. On the page this shows as **Mode: Asynchronous** and **Provider: manual**.
+
+### Who goes to the robot, and who comes to us
+
+| Who sends it | Document | Checked by |
+|---|---|---|
+| Individual host | their own NIN, BVN or driver's licence (number) | Robot (Prembly) |
+| Fleet partner | CAC certificate with an RC or BN number | Robot (Prembly) |
+| Fleet partner | a director's NIN, BVN or driver's licence | **People** |
+| Anyone | passport, tax ID, or any uploaded picture | **People** |
+| Vendors | car documents and driver licences | **People** |
+
+The robot only checks an individual host's own ID and a fleet partner's business number. Everything else comes to us.
+
+### "Pending" with "No file" and "No match data"
+
+Sometimes you open a fleet partner's director ID and see **Pending**, **Provider: manual**, **No file** and **No match data**. Here's why:
+
+- The vendor typed an ID **number**. They didn't upload a picture, so there is **no file**.
+- A director ID goes to people, not the robot, so the robot never looked at it. That's why there is **no match data**.
+- We are not allowed to keep ID numbers (NDPR), so we can't show you the number either.
+
+So the item has nothing to look at, and it **stays Pending forever until someone clicks Approve or Reject**. Nothing is broken, and nothing will move it on its own.
+
+What to do:
+
+- **Approve** only if you are sure who the person is (for example, you spoke to the vendor and checked), and type their legal name exactly.
+- Otherwise **Reject** with a clear reason, and ask the vendor to verify with their **CAC number** (the robot checks that in seconds, and it sets the business name payouts must match) or to **upload a picture** of the ID.
+
+The review panel shows a yellow note explaining this whenever you open one of these.
+
 ## Rules for contributors
 
 - **The API decides.** `useCan()` only hides buttons; every request is checked server-side.
