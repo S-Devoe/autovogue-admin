@@ -1,5 +1,5 @@
 import {
-  Banknote, BadgeCheck, ChartColumn, CalendarRange, Car, Gauge, Gavel, Megaphone, Settings2, ShieldAlert, Users,
+  Banknote, BadgeCheck, ChartColumn, CalendarRange, Car, Gauge, Gavel, LifeBuoy, Megaphone, Settings2, ShieldAlert, Users,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -51,6 +51,8 @@ export const NAV: NavItem[] = [
     ],
   },
   { label: 'Disputes', to: '/disputes', icon: Gavel, perms: ['disputes.view'], badge: 'disputes' },
+  // Badge: unassigned unclosed tickets, from /platform/support/counts (not the attention feed).
+  { label: 'Support', to: '/support', icon: LifeBuoy, perms: ['support.view'], badge: 'support' },
   {
     label: 'People', to: '/people/users', icon: Users, perms: ['accounts.view'],
     children: [

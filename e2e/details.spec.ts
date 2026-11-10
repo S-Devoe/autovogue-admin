@@ -8,6 +8,7 @@ import { watchErrors } from './helpers'
 const LISTS: { list: string; link: RegExp; min: number }[] = [
   { list: '/bookings', link: /^\/bookings\/[0-9A-Z]{26}$/, min: 3 },
   { list: '/disputes', link: /^\/disputes\/[0-9A-Z]{26}$/, min: 1 },
+  { list: '/support?tab=active', link: /^\/support\/[0-9A-Z]{26}$/, min: 0 },
   { list: '/listings', link: /^\/listings\/[0-9A-Z]{26}$/, min: 1 },
   { list: '/people/users', link: /^\/people\/users\/[0-9A-Z]{26}$/, min: 1 },
   { list: '/people/vendors', link: /^\/people\/vendors\/[0-9A-Z]{26}$/, min: 1 },

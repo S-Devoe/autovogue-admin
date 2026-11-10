@@ -13,6 +13,7 @@ import { CommandPalette } from './command-palette'
 import { NAV, type NavItem } from './nav'
 import { useCan } from '@/hooks/use-can'
 import { useAttention } from '@/services/overview/overview.api'
+import { useSupportCounts } from '@/services/support/support.api'
 import { authApi } from '@/services/auth/auth.api'
 import { APP_ENV } from '@/lib/env'
 import { cn } from '@/lib/utils'
@@ -30,6 +31,8 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
   const { can } = useCan()
   const { pathname } = useLocation()
   const { data: attention } = useAttention()
+  const { data: support } = useSupportCounts(can('support.view'))
+  const badgeOf = (key?: string) => (key === 'support' ? support?.unassigned : key ? attention?.badges[key] : undefined)
   const visible = (i: { perms?: string[] }) => !i.perms || can(...i.perms)
   const counts = Object.fromEntries((attention?.items ?? []).map((i) => [i.key, i.count]))
 
@@ -44,7 +47,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <div className="flex-1 overflow-y-auto px-3 pb-6">
         {NAV.filter(visible).map((item) => (
-          <RailItem key={item.label} item={item} pathname={pathname} badge={item.badge ? attention?.badges[item.badge] : undefined} counts={counts} visible={visible} onNavigate={onNavigate} />
+          <RailItem key={item.label} item={item} pathname={pathname} badge={badgeOf(item.badge)} counts={counts} visible={visible} onNavigate={onNavigate} />
         ))}
       </div>
       <p className="px-5 pb-4 text-[10px] text-rail-muted">Every action here is logged.</p>

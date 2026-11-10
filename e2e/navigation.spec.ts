@@ -17,6 +17,7 @@ const PAGES: [string, RegExp][] = [
   ['/money/wallets', /wallets/i],
   ['/money/ledger', /commission|ledger/i],
   ['/disputes', /dispute/i],
+  ['/support', /support/i],
   ['/people/users', /users/i],
   ['/people/vendors', /vendors/i],
   ['/people/waitlist', /waitlist/i],

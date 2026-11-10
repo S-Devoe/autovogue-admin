@@ -34,6 +34,8 @@ const TONES: Record<string, Tone> = {
   PENDING_REVIEW: 'warning', APPROVED: 'success', REJECTED: 'danger',
   // disputes
   open: 'danger', under_review: 'warning', resolved: 'success', closed: 'neutral',
+  // support tickets
+  in_progress: 'warning', awaiting_reply: 'info',
   // accounts / listings
   active: 'success', suspended: 'danger', deactivated: 'neutral', AVAILABLE: 'success', RENTED: 'info',
   MAINTENANCE: 'warning', CLEANING: 'info', RETIRED: 'neutral', DRAFT: 'neutral',

@@ -71,6 +71,13 @@ export const API_ENDPOINTS = {
   reviewChat: (id: string) => `platform/reviews/${id}/conversation`,
   WEBHOOKS: 'platform/webhooks',
 
+  // Support tickets
+  SUPPORT_TICKETS: 'platform/support/tickets',
+  SUPPORT_COUNTS: 'platform/support/counts',
+  SUPPORT_ASSIGNEES: 'platform/support/assignees',
+  supportTicket: (id: string) => `platform/support/tickets/${id}`,
+  supportTicketAction: (id: string, a: 'messages' | 'assign' | 'status') => `platform/support/tickets/${id}/${a}`,
+
   // Accounts
   USERS: 'platform/users',
   user: (id: string) => `platform/users/${id}`,

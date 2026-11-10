@@ -57,4 +57,8 @@ export const QUERY_KEYS = {
   CONTENT: 'Content',
   CHARTS: 'Charts',
   CANCEL_QUOTE: 'CancelQuote',
+  SUPPORT_TICKETS: 'SupportTickets',
+  SUPPORT_TICKET: 'SupportTicket',
+  SUPPORT_COUNTS: 'SupportCounts',
+  SUPPORT_ASSIGNEES: 'SupportAssignees',
 } as const

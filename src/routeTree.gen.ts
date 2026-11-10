@@ -39,6 +39,8 @@ import { Route as AppSettingsPlatformRouteImport } from './routes/_app/settings/
 import { Route as AppSettingsPrivacyRouteImport } from './routes/_app/settings/privacy'
 import { Route as AppSettingsRetentionRouteImport } from './routes/_app/settings/retention'
 import { Route as AppSettingsStaffRouteImport } from './routes/_app/settings/staff'
+import { Route as AppSupportIndexRouteImport } from './routes/_app/support/index'
+import { Route as AppSupportIdRouteImport } from './routes/_app/support/$id'
 import { Route as AppTrustReviewsRouteImport } from './routes/_app/trust/reviews'
 import { Route as AppVerificationQueueRouteImport } from './routes/_app/verification/$queue'
 import { Route as AppVerificationExpiringRouteImport } from './routes/_app/verification/expiring'
@@ -206,6 +208,16 @@ const AppSettingsStaffRoute = AppSettingsStaffRouteImport.update({
   path: '/settings/staff',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSupportIndexRoute = AppSupportIndexRouteImport.update({
+  id: '/support/',
+  path: '/support/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSupportIdRoute = AppSupportIdRouteImport.update({
+  id: '/support/$id',
+  path: '/support/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTrustReviewsRoute = AppTrustReviewsRouteImport.update({
   id: '/trust/reviews',
   path: '/trust/reviews',
@@ -320,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/settings/privacy': typeof AppSettingsPrivacyRoute
   '/settings/retention': typeof AppSettingsRetentionRoute
   '/settings/staff': typeof AppSettingsStaffRoute
+  '/support/$id': typeof AppSupportIdRoute
   '/trust/reviews': typeof AppTrustReviewsRoute
   '/verification/$queue': typeof AppVerificationQueueRoute
   '/verification/expiring': typeof AppVerificationExpiringRoute
@@ -329,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/disputes/': typeof AppDisputesIndexRoute
   '/listings/': typeof AppListingsIndexRoute
   '/reports/': typeof AppReportsIndexRoute
+  '/support/': typeof AppSupportIndexRoute
   '/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/comms/$channel/new': typeof AppCommsChannelNewRoute
   '/comms/in-app/$id': typeof AppCommsInAppIdRoute
@@ -368,6 +382,7 @@ export interface FileRoutesByTo {
   '/settings/privacy': typeof AppSettingsPrivacyRoute
   '/settings/retention': typeof AppSettingsRetentionRoute
   '/settings/staff': typeof AppSettingsStaffRoute
+  '/support/$id': typeof AppSupportIdRoute
   '/trust/reviews': typeof AppTrustReviewsRoute
   '/verification/$queue': typeof AppVerificationQueueRoute
   '/verification/expiring': typeof AppVerificationExpiringRoute
@@ -377,6 +392,7 @@ export interface FileRoutesByTo {
   '/disputes': typeof AppDisputesIndexRoute
   '/listings': typeof AppListingsIndexRoute
   '/reports': typeof AppReportsIndexRoute
+  '/support': typeof AppSupportIndexRoute
   '/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/comms/$channel/new': typeof AppCommsChannelNewRoute
   '/comms/in-app/$id': typeof AppCommsInAppIdRoute
@@ -418,6 +434,7 @@ export interface FileRoutesById {
   '/_app/settings/privacy': typeof AppSettingsPrivacyRoute
   '/_app/settings/retention': typeof AppSettingsRetentionRoute
   '/_app/settings/staff': typeof AppSettingsStaffRoute
+  '/_app/support/$id': typeof AppSupportIdRoute
   '/_app/trust/reviews': typeof AppTrustReviewsRoute
   '/_app/verification/$queue': typeof AppVerificationQueueRoute
   '/_app/verification/expiring': typeof AppVerificationExpiringRoute
@@ -427,6 +444,7 @@ export interface FileRoutesById {
   '/_app/disputes/': typeof AppDisputesIndexRoute
   '/_app/listings/': typeof AppListingsIndexRoute
   '/_app/reports/': typeof AppReportsIndexRoute
+  '/_app/support/': typeof AppSupportIndexRoute
   '/_app/comms/$channel/$id': typeof AppCommsChannelIdRoute
   '/_app/comms/$channel/new': typeof AppCommsChannelNewRoute
   '/_app/comms/in-app/$id': typeof AppCommsInAppIdRoute
@@ -468,6 +486,7 @@ export interface FileRouteTypes {
     | '/settings/privacy'
     | '/settings/retention'
     | '/settings/staff'
+    | '/support/$id'
     | '/trust/reviews'
     | '/verification/$queue'
     | '/verification/expiring'
@@ -477,6 +496,7 @@ export interface FileRouteTypes {
     | '/disputes/'
     | '/listings/'
     | '/reports/'
+    | '/support/'
     | '/comms/$channel/$id'
     | '/comms/$channel/new'
     | '/comms/in-app/$id'
@@ -516,6 +536,7 @@ export interface FileRouteTypes {
     | '/settings/privacy'
     | '/settings/retention'
     | '/settings/staff'
+    | '/support/$id'
     | '/trust/reviews'
     | '/verification/$queue'
     | '/verification/expiring'
@@ -525,6 +546,7 @@ export interface FileRouteTypes {
     | '/disputes'
     | '/listings'
     | '/reports'
+    | '/support'
     | '/comms/$channel/$id'
     | '/comms/$channel/new'
     | '/comms/in-app/$id'
@@ -565,6 +587,7 @@ export interface FileRouteTypes {
     | '/_app/settings/privacy'
     | '/_app/settings/retention'
     | '/_app/settings/staff'
+    | '/_app/support/$id'
     | '/_app/trust/reviews'
     | '/_app/verification/$queue'
     | '/_app/verification/expiring'
@@ -574,6 +597,7 @@ export interface FileRouteTypes {
     | '/_app/disputes/'
     | '/_app/listings/'
     | '/_app/reports/'
+    | '/_app/support/'
     | '/_app/comms/$channel/$id'
     | '/_app/comms/$channel/new'
     | '/_app/comms/in-app/$id'
@@ -808,6 +832,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsStaffRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/support/': {
+      id: '/_app/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof AppSupportIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/support/$id': {
+      id: '/_app/support/$id'
+      path: '/support/$id'
+      fullPath: '/support/$id'
+      preLoaderRoute: typeof AppSupportIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/trust/reviews': {
       id: '/_app/trust/reviews'
       path: '/trust/reviews'
@@ -952,6 +990,7 @@ interface AppRouteChildren {
   AppSettingsPrivacyRoute: typeof AppSettingsPrivacyRoute
   AppSettingsRetentionRoute: typeof AppSettingsRetentionRoute
   AppSettingsStaffRoute: typeof AppSettingsStaffRoute
+  AppSupportIdRoute: typeof AppSupportIdRoute
   AppTrustReviewsRoute: typeof AppTrustReviewsRoute
   AppVerificationQueueRoute: typeof AppVerificationQueueRoute
   AppVerificationExpiringRoute: typeof AppVerificationExpiringRoute
@@ -961,6 +1000,7 @@ interface AppRouteChildren {
   AppDisputesIndexRoute: typeof AppDisputesIndexRoute
   AppListingsIndexRoute: typeof AppListingsIndexRoute
   AppReportsIndexRoute: typeof AppReportsIndexRoute
+  AppSupportIndexRoute: typeof AppSupportIndexRoute
   AppCommsChannelIdRoute: typeof AppCommsChannelIdRoute
   AppCommsChannelNewRoute: typeof AppCommsChannelNewRoute
   AppCommsInAppIdRoute: typeof AppCommsInAppIdRoute
@@ -997,6 +1037,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsPrivacyRoute: AppSettingsPrivacyRoute,
   AppSettingsRetentionRoute: AppSettingsRetentionRoute,
   AppSettingsStaffRoute: AppSettingsStaffRoute,
+  AppSupportIdRoute: AppSupportIdRoute,
   AppTrustReviewsRoute: AppTrustReviewsRoute,
   AppVerificationQueueRoute: AppVerificationQueueRoute,
   AppVerificationExpiringRoute: AppVerificationExpiringRoute,
@@ -1006,6 +1047,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDisputesIndexRoute: AppDisputesIndexRoute,
   AppListingsIndexRoute: AppListingsIndexRoute,
   AppReportsIndexRoute: AppReportsIndexRoute,
+  AppSupportIndexRoute: AppSupportIndexRoute,
   AppCommsChannelIdRoute: AppCommsChannelIdRoute,
   AppCommsChannelNewRoute: AppCommsChannelNewRoute,
   AppCommsInAppIdRoute: AppCommsInAppIdRoute,

@@ -186,6 +186,47 @@ What to do:
 
 The review panel shows a yellow note explaining this whenever you open one of these.
 
+## Support tickets, explained simply
+
+### What a ticket is
+
+A ticket is a question a user (on the app) or a vendor (on the dashboard) sends to us. Think of it as a letter in a mailbox. Each letter has a short name like **#7GQ2KD** so everyone can talk about the same one. You find them all under **Support** in the menu. The number on the menu is how many letters nobody has picked up yet.
+
+### What the statuses mean
+
+| Status | What it means |
+|---|---|
+| **Open** | A new letter. Nobody has started on it. It is our turn. |
+| **In progress** | Someone on the team has picked it up and is working on it. Still our turn. |
+| **Awaiting reply** | We answered, and now we are waiting for the user or vendor to write back. Their turn. |
+| **Closed** | Finished. Nobody can write on it any more. |
+
+When the user or vendor writes back, the ticket goes back to being our turn.
+
+### Users and vendors only ever see "Autovogue Support"
+
+When you reply, the user or vendor does not see your name. They only see **Autovogue Support**, like a shop with one big sign on the door. Inside the admin you still see who really wrote each message, so the team knows who said what.
+
+### Taking over and assigning
+
+- **Take over** puts the ticket on your desk: "I'll handle this one."
+- **Assign to...** puts it on someone else's desk (you need the assign permission for this).
+- If you reply to a ticket nobody has picked up, it lands on your desk by itself.
+
+The **Assigned to me** tab shows everything on your desk. The **Unassigned** tab shows letters nobody has picked up.
+
+### Internal notes
+
+Switch the reply box to **Internal note** to leave a sticky note for the team, like "I called them, waiting for the bank". Notes are **yellow** and only staff can see them. The user or vendor never sees them, gets no notification, and the status does not change.
+
+### Closing is final
+
+**Close ticket** is like sealing the envelope for good. It can't be opened again, and nobody can reply on it. The user or vendor is told it was closed. If they still need help, they open a new ticket.
+
+### Tickets close on their own
+
+If we are waiting on the user or vendor (**Awaiting reply**) and they don't write back for **7 days**, the ticket closes by itself. They are told, just like when a person closes it.
+
 ## Rules for contributors
 
 - **The API decides.** `useCan()` only hides buttons; every request is checked server-side.
