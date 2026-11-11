@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { PageHeader, Panel, Rows } from '@/components/common/page'
-import { naira } from '@/lib/format'
+import { dateTime, naira } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { usePlatformBalances, type PlatformBalances } from '@/services/money/money.api'
 
@@ -82,6 +82,19 @@ function Content({ b }: { b: PlatformBalances }) {
             <Line label="AutoVogue's own" hint="What's left after everything owed: yours to move out" value={b.autovogueAtPaystack} total={b.heldAtPaystack} strong />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">Owed to others in total: {n(owedOut)}.</p>
+          <div className="mt-3 rounded-md border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
+            <p className="font-medium text-foreground">How this is worked out</p>
+            <p className="mt-1">
+              Only paid bookings count here: money that has actually reached Paystack and that we hold for someone. Unpaid checkouts are never
+              included; they are shown on their own under Unpaid checkouts.
+            </p>
+            <p className="mt-1">AutoVogue&apos;s own is what Paystack holds minus everything above, which is the commission from paid bookings not yet moved to your bank.</p>
+            {b.autovogueAtPaystack < 0 && (
+              <p className="mt-1 font-medium text-danger">
+                Negative means the ledger says more is owed than Paystack holds. Check Reconciliation before moving any money.
+              </p>
+            )}
+          </div>
         </Panel>
 
         <div className="grid gap-5">
@@ -92,11 +105,89 @@ function Content({ b }: { b: PlatformBalances }) {
               <Line label="Already moved to AutoVogue's bank" value={b.inAutovogueBank} />
             </div>
           </Panel>
-          <Panel title="Open checkouts">
-            <Line label="Invoiced, not paid yet" hint="Customers who opened checkout and haven't paid. Cleared automatically if the booking ends unpaid." value={b.invoicedNotPaid} />
-          </Panel>
+          <UnpaidCheckouts b={b} />
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Unpaid checkouts, kept apart from everything else on the page: a user
+ * opened a checkout but no money has arrived, so none of it is owed to
+ * anyone yet.
+ */
+function UnpaidCheckouts({ b }: { b: PlatformBalances }) {
+  const count = b.openCheckouts ?? 0
+  const list = b.largestOpenCheckouts ?? []
+  return (
+    <Panel title="Unpaid checkouts" description="Not money we hold. Not counted anywhere else on this page.">
+      <div className="flex items-baseline justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium">Total not paid yet</p>
+          <p className="text-xs text-muted-foreground">{count === 1 ? '1 checkout' : `${count} checkouts`} waiting for the user to pay</p>
+        </div>
+        <p className="font-display text-xl font-semibold tabular">{n(b.invoicedNotPaid)}</p>
+      </div>
+
+      {count > 0 && (
+        <>
+          <p className="mt-4 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">If they pay, it becomes</p>
+          <div className="mt-1 divide-y text-sm">
+            <Row k="Rental for vendors (escrow)" v={n(b.openCheckoutRental ?? 0)} />
+            <Row k="Caution fees (back to users after the trip)" v={n(b.openCheckoutCaution ?? 0)} />
+            <Row k="AutoVogue service fee" v={n(b.openCheckoutServiceFee ?? 0)} />
+            <Row k="VAT on the service fee (FIRS)" v={n(b.openCheckoutVat ?? 0)} />
+          </div>
+
+          {list.length > 0 && (
+            <>
+              <p className="mt-4 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Biggest unpaid checkouts</p>
+              <ul className="mt-1 divide-y text-sm">
+                {list.map((c) => (
+                  <li key={c.bookingId} className="flex items-start justify-between gap-3 py-2">
+                    <div className="min-w-0">
+                      <Link to="/bookings/$id" params={{ id: c.bookingId }} className="font-medium hover:underline">
+                        {c.ref}
+                      </Link>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {c.customer} · {c.vehicle}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{c.expiresAt ? `Expires ${dateTime(c.expiresAt)}` : `Started ${dateTime(c.startedAt)}`}</p>
+                    </div>
+                    <span className="shrink-0 font-semibold tabular">{n(c.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </>
+      )}
+
+      <div className="mt-4 rounded-md border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
+        <p className="font-medium text-foreground">What this means</p>
+        <p className="mt-1">
+          When a user opens a checkout, the price is written down straight away so the payment can be matched when it arrives. Until the user
+          pays, no money has come in, so it isn&apos;t owed to the vendor, the user or FIRS, and it isn&apos;t AutoVogue&apos;s.
+        </p>
+        <p className="mt-1">
+          If they pay, the amount moves into the lines on the left. If they don&apos;t, the checkout expires after 24 hours and is cleared from the
+          books automatically. A big number here usually just means someone started an expensive booking and hasn&apos;t paid.
+        </p>
+        <p className="mt-1">
+          Wallet top-ups a user started but didn&apos;t finish never show anywhere: a wallet only changes once Paystack confirms the payment,
+          and unfinished ones are checked with Paystack and closed automatically.
+        </p>
+      </div>
+    </Panel>
+  )
+}
+
+function Row({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-2">
+      <span className="text-muted-foreground">{k}</span>
+      <span className="tabular">{v}</span>
     </div>
   )
 }

@@ -181,10 +181,29 @@ export interface WebhookRow {
 export const useWebhooks = (reference?: string) => usePagedList<WebhookRow>([QUERY_KEYS.WEBHOOKS], API_ENDPOINTS.WEBHOOKS, { reference })
 
 /** Where all the money is, from the ledger (amounts in naira). */
+/** One unpaid checkout on the Balances page. */
+export interface OpenCheckout {
+  bookingId: string
+  ref: string
+  customer: string
+  vehicle: string
+  amount: number
+  startedAt: string
+  expiresAt?: string
+}
+
 export interface PlatformBalances {
   heldAtPaystack: number
   inAutovogueBank: number
   invoicedNotPaid: number
+  /** How many unpaid checkouts make up invoicedNotPaid. */
+  openCheckouts?: number
+  /** What the unpaid total would become if paid. */
+  openCheckoutRental?: number
+  openCheckoutCaution?: number
+  openCheckoutServiceFee?: number
+  openCheckoutVat?: number
+  largestOpenCheckouts?: OpenCheckout[]
   owedToVendorsEscrow: number
   owedToVendorsWallets: number
   owedToUsersWallets: number
