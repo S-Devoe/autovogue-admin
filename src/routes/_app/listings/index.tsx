@@ -6,7 +6,8 @@ import { Pill, StatusPill } from '@/components/common/status'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Switch } from '@/components/ui/switch'
-import { useVehicles } from '@/services/listings/listings.api'
+import { useVehicleStats, useVehicles, type VehicleStats } from '@/services/listings/listings.api'
+import { StatCards } from '@/components/common/stat-cards'
 import { naira } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/listings/')({
@@ -28,6 +29,12 @@ function Listings() {
   return (
     <>
       <PageHeader eyebrow="Listings" title="All cars" description="Every listing across vendors. Take a listing down with a reason the vendor sees." />
+      <ListingStats
+        active={f.takenDown ? 'takenDown' : f.status ?? ''}
+        onPick={(key) =>
+          nav({ search: { ...f, status: key && key !== 'takenDown' ? key : undefined, takenDown: key === 'takenDown' ? true : undefined } })
+        }
+      />
       <Panel flush>
         <Filters>
           <form className="relative w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); nav({ search: { ...f, q: term || undefined } }) }}>
@@ -73,5 +80,35 @@ function Listings() {
         {qPager}
       </Panel>
     </>
+  )
+}
+
+/** One card per status; tapping a card filters the list to it. */
+const CARDS: { key: string; label: string; count: (s: VehicleStats) => number; sub?: (s: VehicleStats) => string | undefined; tone?: 'danger' }[] = [
+  { key: '', label: 'All', count: (s) => s.total },
+  { key: 'AVAILABLE', label: 'Available', count: (s) => s.available, sub: (s) => (s.notBookable ? `${s.notBookable} not bookable` : undefined) },
+  { key: 'RENTED', label: 'Rented', count: (s) => s.rented },
+  { key: 'MAINTENANCE', label: 'Maintenance', count: (s) => s.maintenance },
+  { key: 'CLEANING', label: 'Cleaning', count: (s) => s.cleaning },
+  { key: 'DRAFT', label: 'Draft', count: (s) => s.draft },
+  { key: 'RETIRED', label: 'Retired', count: (s) => s.retired },
+  { key: 'takenDown', label: 'Taken down', count: (s) => s.takenDown, tone: 'danger' },
+]
+
+function ListingStats({ active, onPick }: { active: string; onPick: (key: string) => void }) {
+  const q = useVehicleStats()
+  return (
+    <StatCards
+      loading={q.isLoading}
+      items={CARDS.map((c) => ({
+        key: c.key || 'all',
+        label: c.label,
+        value: q.data ? c.count(q.data) : undefined,
+        sub: q.data && c.sub ? c.sub(q.data) : undefined,
+        tone: c.tone,
+        active: active === c.key,
+        onClick: () => onPick(c.key),
+      }))}
+    />
   )
 }

@@ -43,7 +43,7 @@ const paged = <T,>(key: string, url: string, f: Record<string, unknown>) =>
   }) as const
 
 export const useUsers = (f: { q?: string; verified?: string; suspended?: boolean }) => useInfiniteQuery(paged<UserRow>(QUERY_KEYS.USERS, API_ENDPOINTS.USERS, f))
-export const useTenants = (f: { q?: string; type?: string; status?: string }) => useInfiniteQuery(paged<TenantRow>(QUERY_KEYS.TENANTS, API_ENDPOINTS.TENANTS, f))
+export const useTenants = (f: { q?: string; type?: string; status?: string; verified?: string }) => useInfiniteQuery(paged<TenantRow>(QUERY_KEYS.TENANTS, API_ENDPOINTS.TENANTS, f))
 
 export interface AccountDoc {
   id: string

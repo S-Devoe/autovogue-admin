@@ -67,6 +67,29 @@ export interface Note {
   createdAt: string
 }
 
+/** Extra days/hours a user bought on an ongoing trip (no caution fee). */
+export interface BookingExtension {
+  id: string
+  status: 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'REFUNDED'
+  units: number
+  unit: 'day' | 'hour'
+  oldEndTime: string
+  newEndTime: string
+  rental: number
+  chauffeurFee: number
+  serviceFee: number
+  vat: number
+  total: number
+  vendorCommission: number
+  vendorVat: number
+  vendorShare: number
+  paidWith?: string
+  createdAt: string
+  paidAt?: string
+  expiresAt?: string
+  releasedAt?: string
+}
+
 export interface BookingDetail {
   booking: Record<string, any> & BookingRow & {
     customerPhone: string
@@ -90,6 +113,8 @@ export interface BookingDetail {
     returnReportedAt: string | null
   }
   timeline: TimelineItem[]
+  /** Extra time bought on the trip, every attempt. Money is in naira. */
+  extensions?: BookingExtension[]
   paymentChecks: number
   refundedKobo: number
   refundableKobo: number

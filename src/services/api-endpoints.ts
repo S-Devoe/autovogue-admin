@@ -93,6 +93,7 @@ export const API_ENDPOINTS = {
 
   // Listings and reviews
   VEHICLES: 'platform/vehicles',
+  VEHICLE_STATS: 'platform/vehicles/stats',
   vehicle: (id: string) => `platform/vehicles/${id}`,
   vehicleAction: (id: string, a: 'takedown' | 'restore') => `platform/vehicles/${id}/${a}`,
   vehiclePhoto: (id: string, photoId: string) => `platform/vehicles/${id}/photos/${photoId}`,

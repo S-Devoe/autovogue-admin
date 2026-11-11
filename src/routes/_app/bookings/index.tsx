@@ -11,6 +11,8 @@ import { BOOKING_STATUSES, FUND_STATES, useBookings, type BookingFilters } from 
 import { downloadCsv } from '@/services/settings/settings.api'
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { useCan } from '@/hooks/use-can'
+import { useBookingStats, type BookingStats } from '@/services/stats.api'
+import { StatCards } from '@/components/common/stat-cards'
 import { dateTime, naira, shortId, titleCase } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/bookings/')({
@@ -29,6 +31,7 @@ function Bookings() {
   const navigate = useNavigate({ from: '/bookings/' })
   const { can } = useCan()
   const q = useBookings(f)
+  const stats = useBookingStats()
   const [term, setTerm] = useState(f.q ?? '')
   const { rows: rows, pager: qPager } = usePager(q)
   const set = (patch: Partial<BookingFilters>) => navigate({ search: { ...f, ...patch } })
@@ -43,6 +46,21 @@ function Bookings() {
         actions={can('exports.ops', 'exports.all') && (
           <Button variant="outline" onClick={() => downloadCsv(API_ENDPOINTS.BOOKINGS, { ...f, format: 'csv' }, 'bookings.csv')}><Download /> Export CSV</Button>
         )}
+      />
+      <StatCards
+        loading={stats.isLoading}
+        items={[
+          { key: 'all', label: 'All', value: stats.data?.total, active: !f.status, onClick: () => set({ status: undefined }) },
+          ...BOOKING_CARDS.filter((c) => can('bookings.view_unpaid') || !c.unpaid).map((c) => ({
+            key: c.status,
+            label: c.label,
+            value: stats.data?.[c.field],
+            tone: c.tone,
+            active: f.status === c.status,
+            onClick: () => set({ status: c.status }),
+          })),
+          { key: 'overdue', label: 'Overdue returns', value: stats.data?.overdue, tone: 'danger' as const },
+        ]}
       />
       <Panel flush>
         <Filters>
@@ -89,3 +107,15 @@ function Bookings() {
     </>
   )
 }
+
+/** One card per booking status (unpaid ones only for staff who may see them). */
+const BOOKING_CARDS: { status: string; label: string; field: keyof BookingStats; tone?: 'danger' | 'warning'; unpaid?: boolean }[] = [
+  { status: 'PENDING_PAYMENT', label: 'Unpaid', field: 'pendingPayment', unpaid: true },
+  { status: 'PENDING_APPROVAL', label: 'Awaiting vendor', field: 'pendingApproval', tone: 'warning' },
+  { status: 'CONFIRMED', label: 'Confirmed', field: 'confirmed' },
+  { status: 'ACTIVE', label: 'On trip', field: 'active' },
+  { status: 'COMPLETED', label: 'Completed', field: 'completed' },
+  { status: 'CANCELLED', label: 'Cancelled', field: 'cancelled' },
+  { status: 'DISPUTED', label: 'Disputed', field: 'disputed', tone: 'danger' },
+  { status: 'PAYMENT_FAILED', label: 'Payment failed', field: 'paymentFailed', tone: 'danger', unpaid: true },
+]

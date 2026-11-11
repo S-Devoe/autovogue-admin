@@ -11,7 +11,7 @@ import { RefundQuoteLine } from '@/components/money/refund-quote'
 import { Button } from '@/components/ui/button'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { useAddNote, useBooking, useCancelBooking, useCancellationQuote, useConfirmPickup, useRecheckPayment, type BookingDetail as BookingDetailData, type TimelineItem } from '@/services/bookings/bookings.api'
+import { useAddNote, useBooking, useCancelBooking, useCancellationQuote, useConfirmPickup, useRecheckPayment, type BookingDetail as BookingDetailData, type BookingExtension, type TimelineItem } from '@/services/bookings/bookings.api'
 import { useCreateRefund, useDisburse, usePayoutAction } from '@/services/money/money.api'
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { QUERY_KEYS } from '@/services/query.keys'
@@ -114,6 +114,8 @@ function BookingDetail() {
               ['User reported the car returned', b.returnReportedAt ? dateTime(b.returnReportedAt) : 'Not yet'],
             ]} />
           </Panel>
+
+          <ExtensionsPanel extensions={q.data.extensions ?? []} />
 
           <Panel title="Timeline" description="Booking events, payments and each Paystack re-check, oldest first." flush>
             <ol className="relative px-5 py-4">
@@ -250,5 +252,58 @@ function TimelineRow({ t, last }: { t: TimelineItem; last: boolean }) {
         <p className="text-[11px] text-muted-foreground">{dateTime(t.at)}{t.actorType && ` · by ${t.actorType}`}</p>
       </div>
     </li>
+  )
+}
+
+const EXT_STATUS: Record<BookingExtension['status'], { label: string; tone: 'success' | 'warning' | 'neutral' | 'danger' }> = {
+  PAID: { label: 'Paid', tone: 'success' },
+  PENDING_PAYMENT: { label: 'Waiting for payment', tone: 'warning' },
+  CANCELLED: { label: 'Not paid (replaced or expired)', tone: 'neutral' },
+  REFUNDED: { label: 'Refunded to wallet', tone: 'danger' },
+}
+
+/** Extension amounts come in naira (the rest of this page uses kobo). */
+const ngnN = (n?: number) => naira(n == null ? null : Math.round(n * 100))
+
+function ExtensionsPanel({ extensions }: { extensions: BookingExtension[] }) {
+  if (extensions.length === 0) return null
+  const paid = extensions.filter((e) => e.status === 'PAID')
+  return (
+    <Panel
+      title="Trip extensions"
+      description="Extra time the user bought during the trip. Charged with the service charge and VAT, never a caution fee. The vendor's share goes to their wallet once paid."
+    >
+      <ol className="grid gap-4">
+        {extensions.map((e) => (
+          <li key={e.id} className="grid gap-2 rounded-md border p-3 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-medium">
+                +{e.units} {e.unit}
+                {e.units === 1 ? '' : 's'}
+              </span>
+              <Pill tone={EXT_STATUS[e.status].tone}>{EXT_STATUS[e.status].label}</Pill>
+            </div>
+            <KV cols={2} items={[
+              ['Was due back', dateTime(e.oldEndTime)],
+              ['New return time', dateTime(e.newEndTime)],
+              ['Rental', ngnN(e.rental)],
+              ['User service charge + VAT', ngnN(e.serviceFee + e.vat)],
+              [e.status === 'PAID' || e.status === 'REFUNDED' ? 'User paid' : 'Price (not paid)', ngnN(e.total)],
+              ['Paid with', e.paidWith === 'wallet' ? 'Wallet' : e.paidWith === 'paystack' ? 'Paystack' : '-'],
+              ['Vendor commission + VAT', ngnN(e.vendorCommission + e.vendorVat)],
+              [e.status === 'PAID' ? 'Vendor share' : 'Vendor share (if paid)', ngnN(e.vendorShare)],
+              ['Started', dateTime(e.createdAt)],
+              ['Paid', e.paidAt ? dateTime(e.paidAt) : '-'],
+              ['In vendor wallet', e.releasedAt ? dateTime(e.releasedAt) : e.status === 'PAID' ? 'Pending' : '-'],
+            ]} />
+          </li>
+        ))}
+      </ol>
+      {paid.length > 1 && (
+        <p className="mt-3 text-sm text-muted-foreground">
+          {paid.length} paid extensions: user paid {ngnN(paid.reduce((s, e) => s + e.total, 0))}, vendor share {ngnN(paid.reduce((s, e) => s + e.vendorShare, 0))}.
+        </p>
+      )}
+    </Panel>
   )
 }

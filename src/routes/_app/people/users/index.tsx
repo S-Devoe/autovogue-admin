@@ -7,10 +7,15 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useUsers } from '@/services/people/people.api'
+import { useUserStats } from '@/services/stats.api'
+import { StatCards } from '@/components/common/stat-cards'
 import { dateOnly } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/people/users/')({
-  validateSearch: (s: Record<string, unknown>): { q?: string; verified?: string } => ({ q: typeof s.q === 'string' ? s.q : undefined, verified: typeof s.verified === 'string' ? s.verified : undefined }),
+  validateSearch: (s: Record<string, unknown>): { q?: string; verified?: string; suspended?: boolean } => ({
+    q: typeof s.q === 'string' ? s.q : undefined, verified: typeof s.verified === 'string' ? s.verified : undefined,
+    suspended: s.suspended === true || s.suspended === 'true' ? true : undefined,
+  }),
   component: Users,
 })
 
@@ -19,10 +24,21 @@ function Users() {
   const nav = useNavigate({ from: '/people/users/' })
   const [term, setTerm] = useState(f.q ?? '')
   const q = useUsers(f)
+  const stats = useUserStats()
   const { rows: rows, pager: qPager } = usePager(q)
   return (
     <>
       <PageHeader eyebrow="People" title="Users" description="Search by name, email, phone or ID. Profiles are read only." />
+      <StatCards
+        loading={stats.isLoading}
+        items={[
+          { key: 'all', label: 'All users', value: stats.data?.total, active: !f.verified && !f.suspended, onClick: () => nav({ search: { q: f.q } }) },
+          { key: 'verified', label: 'Verified', value: stats.data?.verified, active: f.verified === 'true' && !f.suspended, onClick: () => nav({ search: { q: f.q, verified: 'true' } }) },
+          { key: 'not-verified', label: 'Not verified', value: stats.data?.notVerified, active: f.verified === 'false' && !f.suspended, onClick: () => nav({ search: { q: f.q, verified: 'false' } }) },
+          { key: 'suspended', label: 'Suspended', value: stats.data?.suspended, tone: 'danger', active: !!f.suspended, onClick: () => nav({ search: { q: f.q, suspended: true } }) },
+          { key: 'new', label: 'Joined this week', value: stats.data?.newThisWeek },
+        ]}
+      />
       <Panel flush>
         <Filters>
           <form className="relative w-full max-w-sm" onSubmit={(e) => { e.preventDefault(); nav({ search: { ...f, q: term || undefined } }) }}>

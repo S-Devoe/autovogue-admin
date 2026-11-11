@@ -3,6 +3,8 @@ import { Timer } from 'lucide-react'
 import { Empty, PageHeader, Panel, Rows, usePager } from '@/components/common/page'
 import { Pill, StatusPill } from '@/components/common/status'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useDisputeStats } from '@/services/stats.api'
+import { StatCards } from '@/components/common/stat-cards'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useDisputes } from '@/services/disputes/disputes.api'
 import { age, naira, timeLeft, titleCase } from '@/lib/format'
@@ -28,10 +30,20 @@ function Disputes() {
   const f = tab === 'mine' ? { assignee: 'me' } : tab === 'unassigned' ? { status: 'open', unassigned: true } : tab === 'resolved' ? { status: 'resolved' } : {}
   const q = useDisputes(f)
   const qPage = usePager(q)
+  const stats = useDisputeStats()
   const rows = qPage.rows.filter((d) => tab !== 'open' || d.status === 'open' || d.status === 'under_review')
   return (
     <>
       <PageHeader eyebrow="Disputes" title="Dispute queue" description="Target: resolved within 72 hours. Oldest first. Requesting information pauses the clock." />
+      <StatCards
+        loading={stats.isLoading}
+        items={[
+          { key: 'open', label: 'Open', value: stats.data?.open, tone: 'warning', active: tab === 'open', onClick: () => nav({ search: { tab: 'open' } }) },
+          { key: 'unassigned', label: 'Unassigned', value: stats.data?.unassigned, tone: 'warning', active: tab === 'unassigned', onClick: () => nav({ search: { tab: 'unassigned' } }) },
+          { key: 'sla', label: 'Past 72h target', value: stats.data?.pastSla, tone: 'danger', sub: 'Open and not paused' },
+          { key: 'resolved', label: 'Resolved', value: stats.data?.resolved, active: tab === 'resolved', onClick: () => nav({ search: { tab: 'resolved' } }) },
+        ]}
+      />
       <Tabs value={tab} onValueChange={(v) => nav({ search: { tab: v as Tab } })} className="mb-4">
         <TabsList>
           <TabsTrigger value="open">Open</TabsTrigger>

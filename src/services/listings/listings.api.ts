@@ -32,6 +32,23 @@ export const useVehicles = (f: { q?: string; status?: string; state?: string; ta
     getNextPageParam: (p) => p.nextCursor || undefined,
   })
 
+/** Counts for the Listings page cards (all listings, not the filters). */
+export interface VehicleStats {
+  total: number
+  available: number
+  rented: number
+  maintenance: number
+  cleaning: number
+  draft: number
+  retired: number
+  takenDown: number
+  notBookable: number
+}
+
+// Under [VEHICLES] so a takedown or restore refreshes the counts too.
+export const useVehicleStats = () =>
+  useQuery({ queryKey: [QUERY_KEYS.VEHICLES, 'stats'], queryFn: () => get<VehicleStats>(API_ENDPOINTS.VEHICLE_STATS), staleTime: 30_000 })
+
 export interface VehicleDetail {
   vehicle: VehicleRow & Record<string, any>
   photos: { id: string; photoUrl: string; isCover: boolean | null; displayOrder: number | null }[]

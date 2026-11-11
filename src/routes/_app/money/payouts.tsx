@@ -6,6 +6,8 @@ import { StatusPill } from '@/components/common/status'
 import { ReasonDialog } from '@/components/common/reason-dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { usePayoutStats, type PayoutStats } from '@/services/stats.api'
+import { StatCards } from '@/components/common/stat-cards'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { usePayoutAction, usePayouts, type PayoutRow } from '@/services/money/money.api'
 import { useCan } from '@/hooks/use-can'
@@ -20,6 +22,11 @@ const VIEWS = {
   all: { label: 'All', f: {} },
 } as const
 type View = keyof typeof VIEWS
+
+/** Which count belongs to each tab. */
+const PAYOUT_FIELD: Record<View, keyof PayoutStats> = {
+  due: 'due', failed: 'failed', held: 'held', releasing: 'releasing', released: 'released', all: 'total',
+}
 
 export const Route = createFileRoute('/_app/money/payouts')({
   validateSearch: (s: Record<string, unknown>): { tab?: View; state?: string; view?: string } => ({
@@ -36,10 +43,22 @@ function Payouts() {
   const { can } = useCan()
   const [target, setTarget] = useState<{ row: PayoutRow; action: 'hold' | 'release' | 'retry' } | null>(null)
   const { rows: rows, pager: qPager } = usePager(q)
+  const stats = usePayoutStats()
 
   return (
     <>
       <PageHeader eyebrow="Money" title="Payouts" description="Vendor payouts by state. Held payouts are skipped by the scheduler. Failed ones show Paystack's reason." />
+      <StatCards
+        loading={stats.isLoading}
+        items={(Object.keys(VIEWS) as View[]).map((k) => ({
+          key: k,
+          label: VIEWS[k].label,
+          value: stats.data?.[PAYOUT_FIELD[k]],
+          tone: k === 'failed' ? ('danger' as const) : k === 'held' || k === 'due' ? ('warning' as const) : undefined,
+          active: tab === k,
+          onClick: () => navigate({ search: { tab: k } }),
+        }))}
+      />
       <Tabs value={tab} onValueChange={(v) => navigate({ search: { tab: v as View } })} className="mb-4">
         <TabsList>{(Object.keys(VIEWS) as View[]).map((k) => <TabsTrigger key={k} value={k}>{VIEWS[k].label}</TabsTrigger>)}</TabsList>
       </Tabs>
