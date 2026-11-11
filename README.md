@@ -144,7 +144,7 @@ A renter (app user) books a car whose rental price is **₦20,000**, with the de
 
 **What AutoVogue keeps:** ₦600 + ₦1,400 = ₦2,000 in charges. The ₦150 VAT (₦45 + ₦105) belongs to the government, not to us.
 
-The caution fee is extra money the user pays as a promise to bring the car back safely. It is not a service charge, and the user always gets it back in their wallet 24 hours after return, unless there is a dispute.
+The caution fee is extra money the user pays as a promise to bring the car back safely. It is not a service charge, and the user gets it back in their wallet unless there is a dispute (see **Trips, explained simply** for when).
 
 Vendors only ever see the rental price, their commission percentage and their share. They never see the renter/user fee or VAT.
 
@@ -185,6 +185,28 @@ What to do:
 - Otherwise **Reject** with a clear reason, and ask the vendor to verify with their **CAC number** (the robot checks that in seconds, and it sets the business name payouts must match) or to **upload a picture** of the ID.
 
 The review panel shows a yellow note explaining this whenever you open one of these.
+
+## Trips, explained simply
+
+### Handing over the car
+
+When the vendor hands over the car, the user taps **I've received the car** in the app. That tells us the trip really started, and it releases the vendor's share that was waiting. If the user forgets, it confirms itself **12 hours** after pickup.
+
+If the user has the car but forgot to tap, and it can't wait for the 12 hours, open the booking and click **Confirm receipt for user** (needs the `bookings.confirm_pickup` permission; Operations and Support have it). Type a reason; it goes to the audit log. The **Handover** section on the booking shows when the car was received and who confirmed it: the user, automatically, or AutoVogue staff.
+
+### Finishing the trip
+
+A vendor can only mark a trip complete when both are true:
+
+1. Receipt is confirmed (the user tapped, it auto-confirmed after 12 hours, or staff used the button), and
+2. The user tapped **I've returned the car**, or the trip's end time has passed.
+
+The Handover section shows **User reported the car returned** with the time, if they did.
+
+### When the caution fee comes back
+
+- If the user reported the return and the vendor completes the trip with no dispute, the caution fee goes back to the user's wallet **straight away**.
+- Otherwise it goes back **24 hours** after the trip is completed, unless a dispute is opened.
 
 ## Support tickets, explained simply
 

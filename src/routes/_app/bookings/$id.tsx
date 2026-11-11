@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Ban, Banknote, CircleDollarSign, Hand, PlayCircle, RefreshCw, Undo2 } from 'lucide-react'
+import { Ban, Banknote, CircleDollarSign, Hand, KeyRound, PlayCircle, RefreshCw, Undo2 } from 'lucide-react'
 import { KV, Mono, PageHeader, Panel, Rows } from '@/components/common/page'
 import { Pill, StatusPill } from '@/components/common/status'
 import { ReasonDialog } from '@/components/common/reason-dialog'
@@ -11,7 +11,7 @@ import { RefundQuoteLine } from '@/components/money/refund-quote'
 import { Button } from '@/components/ui/button'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { useAddNote, useBooking, useCancelBooking, useCancellationQuote, useRecheckPayment, type TimelineItem } from '@/services/bookings/bookings.api'
+import { useAddNote, useBooking, useCancelBooking, useCancellationQuote, useConfirmPickup, useRecheckPayment, type BookingDetail as BookingDetailData, type TimelineItem } from '@/services/bookings/bookings.api'
 import { useCreateRefund, useDisburse, usePayoutAction } from '@/services/money/money.api'
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { QUERY_KEYS } from '@/services/query.keys'
@@ -21,7 +21,14 @@ import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_app/bookings/$id')({ component: BookingDetail })
 
-type Dialogs = 'cancel' | 'refund' | 'hold' | 'release' | 'disburse' | null
+type Dialogs = 'cancel' | 'refund' | 'hold' | 'release' | 'disburse' | 'pickup' | null
+
+const CONFIRMED_BY: Record<NonNullable<BookingDetailData['booking']['pickupConfirmedBy']>, string> = {
+  user: 'The user, in the app',
+  auto: 'Automatically, 12 hours after pickup',
+  admin: 'AutoVogue staff',
+  return: 'The user, when reporting the return',
+}
 
 function BookingDetail() {
   const { id } = Route.useParams()
@@ -32,6 +39,7 @@ function BookingDetail() {
   const refund = useCreateRefund()
   const payout = usePayoutAction()
   const disburse = useDisburse()
+  const confirmPickup = useConfirmPickup()
   const note = useAddNote(API_ENDPOINTS.bookingNotes, [QUERY_KEYS.BOOKING])
   const [dialog, setDialog] = useState<Dialogs>(null)
   const [refundMode, setRefundMode] = useState<'policy' | 'none' | 'full' | 'partial'>('policy')
@@ -56,6 +64,9 @@ function BookingDetail() {
           <>
             {can('bookings.recheck_payment') && (unpaid || b.fundState === 'PENDING') && (
               <Button variant="outline" onClick={() => recheck.mutate(id)} disabled={recheck.isPending}><RefreshCw className={cn(recheck.isPending && 'animate-spin')} /> Re-check payment</Button>
+            )}
+            {can('bookings.confirm_pickup') && b.status === 'ACTIVE' && !b.pickupConfirmedAt && (
+              <Button variant="outline" onClick={() => setDialog('pickup')}><KeyRound /> Confirm receipt for user</Button>
             )}
             {can('refunds.create') && paid && refundableKobo > 0 && <Button variant="outline" onClick={() => { setAmount(refundableKobo); setDialog('refund') }}><Undo2 /> Refund</Button>}
             {can('payouts.hold') && paid && !b.payoutHeldAt && <Button variant="outline" onClick={() => setDialog('hold')}><Hand /> Hold payout</Button>}
@@ -94,6 +105,14 @@ function BookingDetail() {
                 <FileViewerButton fileRef={b.endFuelPhotoUrl} label="Return fuel photo" target={{ type: 'booking', id }} />
               </div>
             )}
+          </Panel>
+
+          <Panel title="Handover" description="Vendors can't complete the trip until the user has received the car and either reported it returned or the end time has passed.">
+            <KV cols={2} items={[
+              ['Received the car', b.pickupConfirmedAt ? dateTime(b.pickupConfirmedAt) : 'Not confirmed yet'],
+              ['Confirmed by', b.pickupConfirmedBy ? CONFIRMED_BY[b.pickupConfirmedBy] : '-'],
+              ['User reported the car returned', b.returnReportedAt ? dateTime(b.returnReportedAt) : 'Not yet'],
+            ]} />
           </Panel>
 
           <Panel title="Timeline" description="Booking events, payments and each Paystack re-check, oldest first." flush>
@@ -191,6 +210,9 @@ function BookingDetail() {
       <ReasonDialog open={dialog === 'disburse'} onOpenChange={(o) => !o && close()} title="Pay the vendor now" confirmLabel={`Pay ${naira(b.vendorPayoutKobo)}`} pending={disburse.isPending}
         consequence={<>Sends {naira(b.vendorPayoutKobo)} to the vendor's verified settlement account through Paystack. Above the approval threshold it waits for a second approver.</>}
         onConfirm={(reason) => disburse.mutateAsync({ id, reason }).then(close)} />
+      <ReasonDialog open={dialog === 'pickup'} onOpenChange={(o) => !o && close()} title="Confirm receipt for the user" confirmLabel="Confirm receipt" pending={confirmPickup.isPending}
+        consequence="Use this when the user has the car but forgot to confirm in the app. The vendor's share is released."
+        onConfirm={(reason) => confirmPickup.mutateAsync({ id, reason }).then(close)} />
     </>
   )
 }

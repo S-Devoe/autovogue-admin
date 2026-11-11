@@ -85,6 +85,9 @@ export interface BookingDetail {
     returnOdometerKm: number | null
     startFuelPhotoUrl: string | null
     endFuelPhotoUrl: string | null
+    pickupConfirmedAt: string | null
+    pickupConfirmedBy: 'user' | 'auto' | 'admin' | 'return' | null
+    returnReportedAt: string | null
   }
   timeline: TimelineItem[]
   paymentChecks: number
@@ -106,6 +109,13 @@ export const useCancelBooking = () =>
       send('post', API_ENDPOINTS.cancelBooking(v.id), v),
     { invalidate: inv },
   )
+
+/** Staff confirm the user received the car (they forgot to in the app); releases a held vendor share. */
+export const useConfirmPickup = () =>
+  useAdminMutation((v: { id: string; reason: string }) => send('post', API_ENDPOINTS.confirmPickup(v.id), { reason: v.reason }), {
+    invalidate: inv,
+    success: 'Receipt confirmed for the user',
+  })
 
 export const useAddNote = (url: (id: string) => string, keys: string[]) =>
   useAdminMutation((v: { id: string; body: string }) => send('post', url(v.id), { body: v.body }), {

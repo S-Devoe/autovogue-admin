@@ -49,6 +49,7 @@ export const API_ENDPOINTS = {
   cancelBooking: (id: string) => `platform/bookings/${id}/cancel`,
   bookingNotes: (id: string) => `platform/bookings/${id}/notes`,
   disburse: (id: string) => `platform/bookings/${id}/disburse`,
+  confirmPickup: (id: string) => `platform/bookings/${id}/confirm-pickup`,
 
   // Money
   PAYMENTS: 'platform/payments',
