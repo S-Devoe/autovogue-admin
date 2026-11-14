@@ -10,7 +10,7 @@ import { useAddNote } from '@/services/bookings/bookings.api'
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { QUERY_KEYS } from '@/services/query.keys'
 import { useCan } from '@/hooks/use-can'
-import { dateOnly, dateTime, naira, shortId } from '@/lib/format'
+import { dateOnly, dateTime, naira, bookingRef } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/people/users/$id')({ component: User })
 
@@ -48,7 +48,7 @@ function User() {
                 <TableBody>
                   {recentBookings.map((b) => (
                     <TableRow key={b.id}>
-                      <TableCell><Link to="/bookings/$id" params={{ id: b.id }} className="hover:underline"><Mono>{shortId(b.id)}</Mono></Link></TableCell>
+                      <TableCell><Link to="/bookings/$id" params={{ id: b.id }} className="hover:underline"><Mono>{bookingRef(b.id)}</Mono></Link></TableCell>
                       <TableCell className="text-sm">{b.vendorName}<p className="text-xs text-muted-foreground">{b.vehicleName}</p></TableCell>
                       <TableCell className="text-xs">{dateTime(b.startTime)}</TableCell>
                       <TableCell><StatusPill value={b.status} /></TableCell>

@@ -111,6 +111,10 @@ export interface BookingDetail {
     pickupConfirmedAt: string | null
     pickupConfirmedBy: 'user' | 'auto' | 'admin' | 'return' | null
     returnReportedAt: string | null
+    /** Where the user asked for the car to be picked up or delivered. */
+    deliveryAddress: string | null
+    /** The car's location, else the vendor's address. */
+    pickupLocation: string
   }
   timeline: TimelineItem[]
   /** Extra time bought on the trip, every attempt. Money is in naira. */

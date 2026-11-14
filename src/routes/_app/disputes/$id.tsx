@@ -16,7 +16,7 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Textarea } from '@/components/ui/textarea'
 import { openDisputeChat, useAssignDispute, useDispute, useRequestInfo, useResolveDispute, useResumeDispute, type ChatMessage, type Outcome } from '@/services/disputes/disputes.api'
 import { useCan } from '@/hooks/use-can'
-import { dateTime, naira, titleCase } from '@/lib/format'
+import { dateTime, naira, titleCase, bookingRef } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SlaClock } from './index'
 
@@ -63,7 +63,7 @@ function Workspace() {
       <PageHeader
         crumbs={[{ label: 'Disputes', to: '/disputes' }]}
         title={<span className="flex flex-wrap items-center gap-3">{titleCase(d.category)} dispute <StatusPill value={d.status} /></span>}
-        description={<>Raised by the {d.raisedBy === 'customer' ? 'user' : 'vendor'} {dateTime(d.createdAt)} · booking <Link to="/bookings/$id" params={{ id: d.bookingId }} className="underline"><Mono>{d.bookingId}</Mono></Link></>}
+        description={<>Raised by the {d.raisedBy === 'customer' ? 'user' : 'vendor'} {dateTime(d.createdAt)} · booking <Link to="/bookings/$id" params={{ id: d.bookingId }} className="underline"><Mono>{bookingRef(d.bookingId)}</Mono></Link></>}
         actions={open && (
           <>
             {!d.assigneeId || d.assigneeId !== me?.id ? (

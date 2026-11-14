@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useMismatches, useReconRuns, useResolveMismatch, useRunRecon, type Mismatch } from '@/services/money/money.api'
 import { useCan } from '@/hooks/use-can'
-import { dateTime, shortId, titleCase } from '@/lib/format'
+import { dateTime, titleCase, bookingRef } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/money/reconciliation')({ component: Reconciliation })
 
@@ -42,7 +42,7 @@ function Reconciliation() {
                 {mismRows.map((m) => (
                   <TableRow key={m.id}>
                     <TableCell className="text-xs">{dateTime(m.createdAt)}</TableCell>
-                    <TableCell>{m.bookingId ? <Link to="/bookings/$id" params={{ id: m.bookingId }} className="hover:underline"><Mono>{shortId(m.bookingId)}</Mono></Link> : '-'}</TableCell>
+                    <TableCell>{m.bookingId ? <Link to="/bookings/$id" params={{ id: m.bookingId }} className="hover:underline"><Mono>{bookingRef(m.bookingId)}</Mono></Link> : '-'}</TableCell>
                     <TableCell>{titleCase(m.kind)}</TableCell>
                     <TableCell className="max-w-72 text-xs text-muted-foreground">{m.detail}{m.resolutionNote && <p className="mt-1 text-success">Resolved by {m.resolvedByName}: {m.resolutionNote}</p>}</TableCell>
                     <TableCell className="text-right">{!m.resolvedAt && can('reconciliation.resolve') && <Button size="sm" variant="outline" onClick={() => setTarget(m)}>Resolve</Button>}</TableCell>

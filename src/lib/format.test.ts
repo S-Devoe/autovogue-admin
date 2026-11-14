@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { age, bps, naira, timeLeft, titleCase } from './format'
+import { age, bookingRef, bps, naira, timeLeft, titleCase } from './format'
 
 describe('naira', () => {
   it('formats kobo as naira with two decimals', () => {
@@ -33,5 +33,14 @@ describe('titleCase', () => {
     expect(titleCase('PENDING_PAYMENT')).toBe('Pending Payment')
     expect(titleCase(null)).toBe('')
     expect(titleCase({ valid: true } as unknown)).toBe('[Object Object]')
+  })
+})
+
+describe('bookingRef', () => {
+  it('uses the last 6 characters, upper case, like the app and vendor dashboard', () => {
+    expect(bookingRef('01jx9abcdefgh7k2m9')).toBe('#H7K2M9')
+  })
+  it('shows a dash when there is no id', () => {
+    expect(bookingRef(null)).toBe('-')
   })
 })

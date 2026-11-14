@@ -13,7 +13,7 @@ import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { useCan } from '@/hooks/use-can'
 import { useBookingStats, type BookingStats } from '@/services/stats.api'
 import { StatCards } from '@/components/common/stat-cards'
-import { dateTime, naira, shortId, titleCase } from '@/lib/format'
+import { dateTime, naira, titleCase, bookingRef } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/bookings/')({
   validateSearch: (s: Record<string, unknown>): BookingFilters => ({
@@ -90,7 +90,7 @@ function Bookings() {
             <TableBody>
               {rows.map((b) => (
                 <TableRow key={b.id} className="cursor-pointer" onClick={() => navigate({ to: '/bookings/$id', params: { id: b.id } })}>
-                  <TableCell><Mono>{shortId(b.id)}</Mono></TableCell>
+                  <TableCell><Mono>{bookingRef(b.id)}</Mono></TableCell>
                   <TableCell><p className="font-medium">{b.customerName}</p><p className="text-xs text-muted-foreground">{b.customerEmail}</p></TableCell>
                   <TableCell><p>{b.vendorName}</p><p className="text-xs text-muted-foreground">{b.vehicleName} · <span className="font-mono">{b.licensePlate}</span></p></TableCell>
                   <TableCell className="text-xs">{dateTime(b.startTime)}<p className="text-muted-foreground">to {dateTime(b.endTime)}</p></TableCell>

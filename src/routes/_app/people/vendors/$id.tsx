@@ -17,7 +17,7 @@ import { useAddNote } from '@/services/bookings/bookings.api'
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { QUERY_KEYS } from '@/services/query.keys'
 import { useCan } from '@/hooks/use-can'
-import { bps, dateOnly, dateTime, naira, shortId, titleCase } from '@/lib/format'
+import { bps, dateOnly, dateTime, naira, titleCase, bookingRef } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/people/vendors/$id')({ component: Vendor })
 
@@ -146,7 +146,7 @@ function Vendor() {
                   <TableBody>
                     {q.data.recentBookings.map((b) => (
                       <TableRow key={b.id}>
-                        <TableCell><Link to="/bookings/$id" params={{ id: b.id }} className="hover:underline"><Mono>{shortId(b.id)}</Mono></Link></TableCell>
+                        <TableCell><Link to="/bookings/$id" params={{ id: b.id }} className="hover:underline"><Mono>{bookingRef(b.id)}</Mono></Link></TableCell>
                         <TableCell>{b.customerName}</TableCell>
                         <TableCell className="text-xs">{dateTime(b.startTime)}</TableCell>
                         <TableCell><StatusPill value={b.status} /></TableCell>
@@ -164,7 +164,7 @@ function Vendor() {
                   <TableBody>
                     {q.data.payouts.map((p) => (
                       <TableRow key={p.id}>
-                        <TableCell><Link to="/bookings/$id" params={{ id: p.id }} className="hover:underline"><Mono>{shortId(p.id)}</Mono></Link></TableCell>
+                        <TableCell><Link to="/bookings/$id" params={{ id: p.id }} className="hover:underline"><Mono>{bookingRef(p.id)}</Mono></Link></TableCell>
                         <TableCell><StatusPill value={p.fundState} /></TableCell>
                         <TableCell className="text-xs">{dateTime(p.payoutReleasedAt)}</TableCell>
                         <TableCell className="text-right tabular">{naira(p.vendorPayoutKobo)}</TableCell>

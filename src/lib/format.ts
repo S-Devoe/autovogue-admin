@@ -33,6 +33,9 @@ export function timeLeft(secondsLeft: number) {
   return neg ? `${txt} over` : `${txt} left`
 }
 
+/** Same rule as the app, vendor dashboard and API emails: last 6 chars, upper case. */
+export const bookingRef = (id?: string | null) => (id ? `#${id.slice(-6).toUpperCase()}` : '-')
+
 export const shortId = (id?: string | null) => (id ? id.slice(-8) : '-')
 
 export const titleCase = (s?: unknown) =>

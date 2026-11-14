@@ -16,7 +16,7 @@ import { useCreateRefund, useDisburse, usePayoutAction } from '@/services/money/
 import { API_ENDPOINTS } from '@/services/api-endpoints'
 import { QUERY_KEYS } from '@/services/query.keys'
 import { useCan } from '@/hooks/use-can'
-import { dateTime, naira, titleCase } from '@/lib/format'
+import { bookingRef, dateTime, naira, titleCase } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_app/bookings/$id')({ component: BookingDetail })
@@ -59,7 +59,7 @@ function BookingDetail() {
       <PageHeader
         crumbs={[{ label: 'Bookings', to: '/bookings' }]}
         title={<span className="flex flex-wrap items-center gap-3">{b.vehicleName} <StatusPill value={b.status} /> <StatusPill value={b.fundState} /></span>}
-        description={<>Booking <Mono>{b.id}</Mono> · {titleCase(b.serviceType)} · {dateTime(b.startTime)} to {dateTime(b.endTime)} WAT</>}
+        description={<>Booking <Mono>{bookingRef(b.id)}</Mono> · {titleCase(b.serviceType)} · {dateTime(b.startTime)} to {dateTime(b.endTime)} WAT</>}
         actions={
           <>
             {can('bookings.recheck_payment') && (unpaid || b.fundState === 'PENDING') && (
@@ -107,6 +107,13 @@ function BookingDetail() {
             )}
           </Panel>
 
+          <Panel title="Pickup and delivery" description="Where the vendor hands over the car, and where the user asked for it.">
+            <KV cols={2} items={[
+              ['Vendor pickup location', b.pickupLocation || 'Not set'],
+              ["User's pickup/delivery location", b.deliveryAddress || 'Not given'],
+            ]} />
+          </Panel>
+
           <Panel title="Handover" description="Vendors can't complete the trip until the user has received the car and either reported it returned or the end time has passed.">
             <KV cols={2} items={[
               ['Received the car', b.pickupConfirmedAt ? dateTime(b.pickupConfirmedAt) : 'Not confirmed yet'],
@@ -139,6 +146,7 @@ function BookingDetail() {
               <Line k="Payout due" v={dateTime(b.payoutEligibleAt)} />
               <Line k="Payout released" v={dateTime(b.payoutReleasedAt)} />
               <Line k="Paystack reference" v={<Mono>{b.gatewayReference ?? '-'}</Mono>} />
+              <Line k="Booking ID" v={<Mono className="break-all">{b.id}</Mono>} />
             </dl>
           </Panel>
           <NotesPanel notes={q.data.notes} canAdd={can('bookings.notes')} pending={note.isPending} onAdd={(body) => note.mutateAsync({ id, body })} />

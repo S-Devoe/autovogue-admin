@@ -11,7 +11,7 @@ import { StatCards } from '@/components/common/stat-cards'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { usePayoutAction, usePayouts, type PayoutRow } from '@/services/money/money.api'
 import { useCan } from '@/hooks/use-can'
-import { dateTime, naira, shortId } from '@/lib/format'
+import { dateTime, naira, bookingRef } from '@/lib/format'
 
 const VIEWS = {
   due: { label: 'Due now', f: { view: 'due' } },
@@ -69,7 +69,7 @@ function Payouts() {
             <TableBody>
               {rows.map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell><Link to="/bookings/$id" params={{ id: r.id }} className="hover:underline"><Mono>{shortId(r.id)}</Mono></Link></TableCell>
+                  <TableCell><Link to="/bookings/$id" params={{ id: r.id }} className="hover:underline"><Mono>{bookingRef(r.id)}</Mono></Link></TableCell>
                   <TableCell><Link to="/people/vendors/$id" params={{ id: r.tenantId }} className="hover:underline">{r.vendorName}</Link></TableCell>
                   <TableCell><StatusPill value={r.fundState} />{r.payoutHeldAt && <p className="mt-1 text-[11px] font-semibold text-warning">Held</p>}</TableCell>
                   <TableCell className="text-xs">{dateTime(r.payoutReleasedAt ?? r.payoutEligibleAt)}</TableCell>
