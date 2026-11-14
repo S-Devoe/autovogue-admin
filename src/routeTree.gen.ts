@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppBookingsIndexRouteImport } from './routes/_app/bookings/index'
 import { Route as AppBookingsIdRouteImport } from './routes/_app/bookings/$id'
+import { Route as AppCommsLegalRouteImport } from './routes/_app/comms/legal'
 import { Route as AppDisputesIndexRouteImport } from './routes/_app/disputes/index'
 import { Route as AppDisputesIdRouteImport } from './routes/_app/disputes/$id'
 import { Route as AppListingsIndexRouteImport } from './routes/_app/listings/index'
@@ -96,6 +97,11 @@ const AppBookingsIndexRoute = AppBookingsIndexRouteImport.update({
 const AppBookingsIdRoute = AppBookingsIdRouteImport.update({
   id: '/bookings/$id',
   path: '/bookings/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommsLegalRoute = AppCommsLegalRouteImport.update({
+  id: '/comms/legal',
+  path: '/comms/legal',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDisputesIndexRoute = AppDisputesIndexRouteImport.update({
@@ -313,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/bookings/$id': typeof AppBookingsIdRoute
+  '/comms/legal': typeof AppCommsLegalRoute
   '/disputes/$id': typeof AppDisputesIdRoute
   '/listings/$id': typeof AppListingsIdRoute
   '/money/balances': typeof AppMoneyBalancesRoute
@@ -363,6 +370,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/': typeof AppIndexRoute
   '/bookings/$id': typeof AppBookingsIdRoute
+  '/comms/legal': typeof AppCommsLegalRoute
   '/disputes/$id': typeof AppDisputesIdRoute
   '/listings/$id': typeof AppListingsIdRoute
   '/money/balances': typeof AppMoneyBalancesRoute
@@ -415,6 +423,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_app/': typeof AppIndexRoute
   '/_app/bookings/$id': typeof AppBookingsIdRoute
+  '/_app/comms/legal': typeof AppCommsLegalRoute
   '/_app/disputes/$id': typeof AppDisputesIdRoute
   '/_app/listings/$id': typeof AppListingsIdRoute
   '/_app/money/balances': typeof AppMoneyBalancesRoute
@@ -467,6 +476,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/bookings/$id'
+    | '/comms/legal'
     | '/disputes/$id'
     | '/listings/$id'
     | '/money/balances'
@@ -517,6 +527,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/'
     | '/bookings/$id'
+    | '/comms/legal'
     | '/disputes/$id'
     | '/listings/$id'
     | '/money/balances'
@@ -568,6 +579,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_app/'
     | '/_app/bookings/$id'
+    | '/_app/comms/legal'
     | '/_app/disputes/$id'
     | '/_app/listings/$id'
     | '/_app/money/balances'
@@ -676,6 +688,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings/$id'
       fullPath: '/bookings/$id'
       preLoaderRoute: typeof AppBookingsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/comms/legal': {
+      id: '/_app/comms/legal'
+      path: '/comms/legal'
+      fullPath: '/comms/legal'
+      preLoaderRoute: typeof AppCommsLegalRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/disputes/': {
@@ -971,6 +990,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppBookingsIdRoute: typeof AppBookingsIdRoute
+  AppCommsLegalRoute: typeof AppCommsLegalRoute
   AppDisputesIdRoute: typeof AppDisputesIdRoute
   AppListingsIdRoute: typeof AppListingsIdRoute
   AppMoneyBalancesRoute: typeof AppMoneyBalancesRoute
@@ -1018,6 +1038,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppBookingsIdRoute: AppBookingsIdRoute,
+  AppCommsLegalRoute: AppCommsLegalRoute,
   AppDisputesIdRoute: AppDisputesIdRoute,
   AppListingsIdRoute: AppListingsIdRoute,
   AppMoneyBalancesRoute: AppMoneyBalancesRoute,

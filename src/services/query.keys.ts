@@ -55,6 +55,7 @@ export const QUERY_KEYS = {
   BREACHES: 'Breaches',
   NAME_CHANGES: 'NameChanges',
   CONTENT: 'Content',
+  LEGAL: 'Legal',
   CHARTS: 'Charts',
   CANCEL_QUOTE: 'CancelQuote',
   SUPPORT_TICKETS: 'SupportTickets',

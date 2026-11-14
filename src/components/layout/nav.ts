@@ -65,11 +65,12 @@ export const NAV: NavItem[] = [
   { label: 'Trust', to: '/trust/reviews', icon: ShieldAlert, perms: ['reviews.moderate'], badge: 'trust' },
   { label: 'Reports', to: '/reports', icon: ChartColumn, perms: ['payments.view', 'bookings.view'] },
   {
-    label: 'Comms', to: '/comms/email', icon: Megaphone, perms: ['broadcasts.draft'],
+    label: 'Comms', to: '/comms/email', icon: Megaphone, perms: ['broadcasts.draft', 'legal.view'],
     children: [
-      { label: 'Email campaigns', to: '/comms/email' },
-      { label: 'Push campaigns', to: '/comms/push' },
-      { label: 'In-app messages', to: '/comms/in-app' },
+      { label: 'Email campaigns', to: '/comms/email', perms: ['broadcasts.draft'] },
+      { label: 'Push campaigns', to: '/comms/push', perms: ['broadcasts.draft'] },
+      { label: 'In-app messages', to: '/comms/in-app', perms: ['broadcasts.draft'] },
+      { label: 'Terms and policies', to: '/comms/legal', perms: ['legal.view'] },
     ],
   },
   {

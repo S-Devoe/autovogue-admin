@@ -139,6 +139,7 @@ export const API_ENDPOINTS = {
   campaign: (id: string) => `platform/campaigns/${id}`,
   campaignAction: (id: string, action: 'pause' | 'resume' | 'cancel') => `platform/campaigns/${id}/${action}`,
   CONTENT: 'platform/content',
+  LEGAL: 'platform/legal',
   CHARTS: 'platform/reports/charts',
   exportKind: (kind: string) => `platform/exports/${kind}`,
   DSR: 'platform/dsr',
