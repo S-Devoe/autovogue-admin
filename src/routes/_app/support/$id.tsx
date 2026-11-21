@@ -42,6 +42,7 @@ function TicketPage() {
   const t = q.data
   const closed = t.status === 'closed'
   const who = requesterLabel(t.requesterType).toLowerCase()
+  const guest = t.requesterType === 'guest'
   const canReply = can('support.reply') && !closed
   const canAssign = can('support.assign') && !closed
 
@@ -73,11 +74,13 @@ function TicketPage() {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid content-start gap-5">
-          <Panel title="Conversation" description={`The ${who} sees staff replies as "Autovogue Support". Internal notes are never shown to them.`}>
+          <Panel title="Conversation" description={guest
+            ? `Sent from the contact form on autovogue.app. Your replies are emailed to them from "Autovogue Support". Internal notes are never sent.`
+            : `The ${who} sees staff replies as "Autovogue Support". Internal notes are never shown to them.`}>
             <Conversation messages={t.messages} who={who} />
           </Panel>
           {closed ? (
-            <p className="flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm text-muted-foreground"><Lock className="size-4" /> This ticket is closed. Nobody can reply to it any more. The {who} has to open a new ticket if they still need help.</p>
+            <p className="flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm text-muted-foreground"><Lock className="size-4" /> This ticket is closed. Nobody can reply to it any more. {guest ? 'They can send a new message from autovogue.app/support if they still need help.' : `The ${who} has to open a new ticket if they still need help.`}</p>
           ) : canReply ? (
             <Composer ticket={t} who={who} onSent={restartWindow} onError={onWriteError} />
           ) : null}
@@ -85,13 +88,14 @@ function TicketPage() {
         <div className="grid content-start gap-5">
           <Panel title={`From the ${who}`}>
             <KV cols={1} items={[
-              ['Name', can('accounts.view') && t.requesterName ? (
+              ['Name', can('accounts.view') && t.requesterName && !guest ? (
                 t.requesterType === 'tenant'
                   ? <Link to="/people/vendors/$id" params={{ id: t.requesterId }} className="hover:underline">{t.requesterName}</Link>
                   : <Link to="/people/users/$id" params={{ id: t.requesterId }} className="hover:underline">{t.requesterName}</Link>
               ) : (t.requesterName || '-')],
               ['Type', requesterLabel(t.requesterType)],
               ['Email', t.requesterEmail || '-'],
+              ...(guest ? [['Phone', t.requesterPhone || 'Not given'] as [string, React.ReactNode]] : []),
               ...(t.requesterType === 'tenant' && t.openedByName ? [['Opened by', `${t.openedByName} (vendor team member)`] as [string, React.ReactNode]] : []),
               ['Booking', t.bookingId && t.bookingReference
                 ? (can('bookings.view') ? <Link to="/bookings/$id" params={{ id: t.bookingId }} className="hover:underline"><Mono>{t.bookingReference}</Mono></Link> : <Mono>{t.bookingReference}</Mono>)
@@ -106,7 +110,9 @@ function TicketPage() {
               ['Last activity', dateTime(t.lastMessageAt)],
             ]} />
             {t.status === 'awaiting_reply' && (
-              <p className="mt-3 rounded-md bg-info-soft px-3 py-2 text-xs text-info">Waiting for the {who}. If they don't reply within 7 days, the ticket closes on its own.</p>
+              <p className="mt-3 rounded-md bg-info-soft px-3 py-2 text-xs text-info">{guest
+                  ? <>Your reply was emailed to them. Website visitors can't reply here: they write back to support@autovogue.app or send a new message from the website. This ticket closes on its own after 7 days.</>
+                  : <>Waiting for the {who}. If they don't reply within 7 days, the ticket closes on its own.</>}</p>
             )}
           </Panel>
         </div>
@@ -173,7 +179,7 @@ function Composer({ ticket, who, onSent, onError }: { ticket: AdminTicketDetail;
       <p className={cn('mb-2 rounded-md px-3 py-2 text-xs', internal ? 'bg-yellow-50 text-yellow-900 dark:bg-yellow-400/10 dark:text-yellow-200' : 'bg-info-soft text-info')}>
         {internal
           ? `Only staff can see this. The ${who} is not told and the status does not change.`
-          : `The ${who} sees this from "Autovogue Support", never your name. They get a notification, and the ticket moves to Awaiting reply${ticket.assignee ? '' : ' and is assigned to you'}.`}
+          : `The ${who} sees this from "Autovogue Support", never your name. ${ticket.requesterType === 'guest' ? 'It is emailed to them' : 'They get a notification'}, and the ticket moves to Awaiting reply${ticket.assignee ? '' : ' and is assigned to you'}.`}
       </p>
       <Textarea
         value={body}
@@ -244,7 +250,9 @@ function StatusActions({ ticket, onError }: { ticket: AdminTicketDetail; onError
           <DialogHeader>
             <DialogTitle className="font-display text-lg">Close ticket {ticket.reference}?</DialogTitle>
             <DialogDescription>
-              Closing is final. Nobody can reply to this ticket again, and it can't be reopened. The {who} is notified that Autovogue Support closed it, and has to open a new ticket if they still need help.
+              Closing is final. Nobody can reply to this ticket again, and it can't be reopened. {ticket.requesterType === 'guest'
+                ? 'Website visitors are not told when a ticket closes.'
+                : `The ${who} is notified that Autovogue Support closed it, and has to open a new ticket if they still need help.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -5,7 +5,8 @@ import { get, send, useAdminMutation } from '../request'
 
 export type TicketStatus = 'open' | 'in_progress' | 'awaiting_reply' | 'closed'
 export type TicketCategory = 'booking' | 'payment' | 'account' | 'verification' | 'vehicle' | 'other'
-export type RequesterType = 'user' | 'tenant'
+/** guest: a website visitor who used the contact form on autovogue.app. */
+export type RequesterType = 'user' | 'tenant' | 'guest'
 
 export const TICKET_STATUS_LABEL: Record<TicketStatus, string> = {
   open: 'Open',
@@ -24,7 +25,7 @@ export const TICKET_CATEGORIES: { value: TicketCategory; label: string }[] = [
 ]
 
 export const categoryLabel = (c: string) => TICKET_CATEGORIES.find((x) => x.value === c)?.label ?? c
-export const requesterLabel = (t: RequesterType) => (t === 'tenant' ? 'Vendor' : 'User')
+export const requesterLabel = (t: RequesterType) => (t === 'tenant' ? 'Vendor' : t === 'guest' ? 'Website visitor' : 'User')
 
 export interface AdminTicket {
   id: string
@@ -37,6 +38,8 @@ export interface AdminTicket {
   requesterName: string
   /** Detail only. */
   requesterEmail?: string
+  /** Website visitors only, when they gave one (detail only). */
+  requesterPhone?: string
   /** The vendor team member who opened it (detail only). */
   openedByName?: string
   bookingId?: string

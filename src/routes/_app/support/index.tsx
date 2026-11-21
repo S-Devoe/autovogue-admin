@@ -37,7 +37,7 @@ const str = (v: unknown) => (typeof v === 'string' && v ? v : undefined)
 export const Route = createFileRoute('/_app/support/')({
   validateSearch: (s: Record<string, unknown>): Search => ({
     tab: str(s.tab) && str(s.tab)! in TABS ? (s.tab as Tab) : undefined,
-    requesterType: s.requesterType === 'user' || s.requesterType === 'tenant' ? s.requesterType : undefined,
+    requesterType: s.requesterType === 'user' || s.requesterType === 'tenant' || s.requesterType === 'guest' ? s.requesterType : undefined,
     category: str(s.category),
     q: str(s.q),
   }),
@@ -61,7 +61,7 @@ function SupportQueue() {
       <PageHeader
         eyebrow="Support"
         title="Support tickets"
-        description="Questions from users and vendors. They only ever see replies from Autovogue Support, never your name. Latest activity first."
+        description="Questions from users, vendors and the contact form on the website. They only ever see replies from Autovogue Support, never your name. Latest activity first."
       />
       <Tabs value={tab} onValueChange={(v) => set({ tab: v as Tab })} className="mb-4">
         <TabsList className="flex-wrap">
@@ -81,12 +81,13 @@ function SupportQueue() {
         <Filters>
           <form className="relative w-full max-w-xs" onSubmit={(e) => { e.preventDefault(); set({ q: term.trim() || undefined }) }}>
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Subject or #REF" className="pl-8" aria-label="Search tickets" />
+            <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Subject, email or #REF" className="pl-8" aria-label="Search tickets" />
           </form>
           <NativeSelect aria-label="Filter by who asked" value={search.requesterType ?? ''} onChange={(e) => set({ requesterType: (e.target.value || undefined) as RequesterType | undefined })} className="w-40">
-            <NativeSelectOption value="">Users and vendors</NativeSelectOption>
+            <NativeSelectOption value="">Everyone</NativeSelectOption>
             <NativeSelectOption value="user">Users</NativeSelectOption>
             <NativeSelectOption value="tenant">Vendors</NativeSelectOption>
+            <NativeSelectOption value="guest">Website visitors</NativeSelectOption>
           </NativeSelect>
           <NativeSelect aria-label="Filter by category" value={search.category ?? ''} onChange={(e) => set({ category: e.target.value || undefined })} className="w-40">
             <NativeSelectOption value="">Any category</NativeSelectOption>
