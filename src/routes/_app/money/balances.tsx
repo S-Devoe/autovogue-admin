@@ -73,6 +73,7 @@ function Content({ b }: { b: PlatformBalances }) {
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
         <Panel title={`Held at Paystack: ${n(b.heldAtPaystack)}`} description="Who that money belongs to.">
+          <PaystackNow b={b} />
           <div className="divide-y">
             <Line label="Vendors: trips in escrow" hint="Paid trips not yet released to the vendor" value={b.owedToVendorsEscrow} total={b.heldAtPaystack} />
             <Line label="Vendors: wallets" hint="Released to vendors, not yet withdrawn" value={b.owedToVendorsWallets} total={b.heldAtPaystack} />
@@ -180,6 +181,69 @@ function UnpaidCheckouts({ b }: { b: PlatformBalances }) {
         </p>
       </div>
     </Panel>
+  )
+}
+
+/**
+ * Paystack's own view, live: money only becomes sendable about a day after
+ * a payment. Withdrawals and commission transfers wait for it, then go out
+ * automatically.
+ */
+function PaystackNow({ b }: { b: PlatformBalances }) {
+  const ready = b.paystackReady
+  const settling = b.paystackSettling ?? null
+  const wCount = b.withdrawalsWaitingCount ?? 0
+  const cCount = b.commissionWaitingCount ?? 0
+  return (
+    <div className="mb-3 rounded-lg border p-3">
+      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">At Paystack right now</p>
+      {ready == null ? (
+        <p className="mt-2 text-sm text-muted-foreground">Couldn&apos;t reach Paystack just now. The figures below are from our records.</p>
+      ) : (
+        <div className="mt-1 divide-y text-sm">
+          <div className="flex items-baseline justify-between gap-4 py-2">
+            <div>
+              <p className="font-medium">Ready to send</p>
+              <p className="text-xs text-muted-foreground">Settled. Withdrawals and commission can go out now.</p>
+            </div>
+            <span className="shrink-0 font-semibold tabular">{n(ready)}</span>
+          </div>
+          {settling != null && settling >= 0 && (
+            <div className="flex items-baseline justify-between gap-4 py-2">
+              <div>
+                <p className="font-medium">Still settling</p>
+                <p className="text-xs text-muted-foreground">Paid recently. Paystack makes it sendable about a day after each payment.</p>
+              </div>
+              <span className="shrink-0 font-semibold tabular">{n(settling)}</span>
+            </div>
+          )}
+          {settling != null && settling < 0 && (
+            <p className="py-2 text-xs text-warning">
+              Paystack holds {n(-settling)} more than our records. Usually money added to Paystack directly. Check Reconciliation if you
+              didn&apos;t add it.
+            </p>
+          )}
+        </div>
+      )}
+      {(wCount > 0 || cCount > 0) && (
+        <div className="mt-2 rounded-md border border-warning/30 bg-warning-soft p-3 text-xs">
+          <p className="font-medium text-warning">Waiting for money to settle</p>
+          {wCount > 0 && (
+            <p className="mt-1 text-muted-foreground">
+              {wCount === 1 ? '1 withdrawal' : `${wCount} withdrawals`} ({n(b.withdrawalsWaiting ?? 0)}) reserved from wallets and sent
+              automatically once Paystack has enough ready.
+            </p>
+          )}
+          {cCount > 0 && (
+            <p className="mt-1 text-muted-foreground">
+              {cCount === 1 ? '1 commission transfer' : `${cCount} commission transfers`} ({n(b.commissionWaiting ?? 0)}) to
+              AutoVogue&apos;s bank, sent after waiting withdrawals.
+            </p>
+          )}
+          <p className="mt-1 text-muted-foreground">Anything still waiting after 36 hours is flagged on Overview.</p>
+        </div>
+      )}
+    </div>
   )
 }
 

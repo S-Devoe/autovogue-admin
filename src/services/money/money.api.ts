@@ -194,6 +194,16 @@ export interface OpenCheckout {
 
 export interface PlatformBalances {
   heldAtPaystack: number
+  /** Paystack's own balance, live: settled money that can be sent now. Null when Paystack couldn't be reached. */
+  paystackReady?: number | null
+  /** heldAtPaystack minus paystackReady: payments Paystack hasn't settled yet. Below zero: Paystack holds more than our records. */
+  paystackSettling?: number | null
+  /** Withdrawals reserved but waiting for Paystack to settle before they're sent. */
+  withdrawalsWaiting?: number
+  withdrawalsWaitingCount?: number
+  /** Commission transfers to AutoVogue's bank waiting for Paystack to settle. */
+  commissionWaiting?: number
+  commissionWaitingCount?: number
   inAutovogueBank: number
   invoicedNotPaid: number
   /** How many unpaid checkouts make up invoicedNotPaid. */
