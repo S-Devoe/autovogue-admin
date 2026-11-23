@@ -3,6 +3,7 @@ import { KV, Mono, PageHeader, Panel, Rows } from '@/components/common/page'
 import { Pill, StatusPill } from '@/components/common/status'
 import { AuditTrail, NotesPanel } from '@/components/common/record-panel'
 import { AccountActions } from '@/components/people/account-actions'
+import { DeletedBanner } from '@/components/people/deleted-banner'
 import { DocsTable } from '@/components/people/docs-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useUser } from '@/services/people/people.api'
@@ -20,15 +21,16 @@ function User() {
   const q = useUser(id)
   const note = useAddNote((x) => API_ENDPOINTS.accountAction('users', x, 'notes'), [QUERY_KEYS.USER])
   if (q.isLoading || !q.data) return <Rows n={10} />
-  const { user: u, wallet, documents, recentBookings, openBookings, notes, verifiedLegalName } = q.data
+  const { user: u, wallet, documents, recentBookings, openBookings, notes, verifiedLegalName, wipeDueAt } = q.data
   return (
     <>
       <PageHeader
         crumbs={[{ label: 'Users', to: '/people/users' }]}
-        title={<span className="flex flex-wrap items-center gap-3">{u.firstName} {u.lastName} {u.suspendedAt ? <Pill tone="danger">Suspended</Pill> : u.isVerified ? <Pill tone="success">Verified</Pill> : <Pill>Not verified</Pill>}</span>}
-        description={<>{u.email} · joined {dateOnly(u.createdAt)} · <Mono>{u.id}</Mono></>}
-        actions={<AccountActions kind="users" id={id} suspended={!!u.suspendedAt} openBookings={openBookings.length} />}
+        title={<span className="flex flex-wrap items-center gap-3">{u.firstName} {u.lastName} {u.deletedAt ? <Pill tone="danger">Deleted</Pill> : u.suspendedAt ? <Pill tone="danger">Suspended</Pill> : u.isVerified ? <Pill tone="success">Verified</Pill> : <Pill>Not verified</Pill>}</span>}
+        description={<>{u.purgedAt ? 'Details wiped' : u.email} · joined {dateOnly(u.createdAt)} · <Mono>{u.id}</Mono></>}
+        actions={u.deletedAt ? undefined : <AccountActions kind="users" id={id} suspended={!!u.suspendedAt} openBookings={openBookings.length} />}
       />
+      {u.deletedAt && <DeletedBanner who="This user" deletedAt={u.deletedAt} purgedAt={u.purgedAt} wipeDueAt={wipeDueAt} />}
       {u.suspendedAt && <div className="rise mb-5 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">Suspended {dateTime(u.suspendedAt)}: {u.suspendReason}</div>}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="grid content-start gap-5">

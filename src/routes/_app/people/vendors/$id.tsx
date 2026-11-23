@@ -6,6 +6,7 @@ import { Pill, StatusPill } from '@/components/common/status'
 import { ReasonDialog } from '@/components/common/reason-dialog'
 import { AuditTrail, NotesPanel } from '@/components/common/record-panel'
 import { AccountActions } from '@/components/people/account-actions'
+import { DeletedBanner } from '@/components/people/deleted-banner'
 import { DocsTable } from '@/components/people/docs-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,10 +43,11 @@ function Vendor() {
     <>
       <PageHeader
         crumbs={[{ label: 'Vendors', to: '/people/vendors' }]}
-        title={<span className="flex flex-wrap items-center gap-3">{t.name} <StatusPill value={t.status} /> {t.isVerified ? <Pill tone="success">Verified</Pill> : <Pill tone="warning">Not verified</Pill>}</span>}
+        title={<span className="flex flex-wrap items-center gap-3">{t.name} {t.deletedAt ? <Pill tone="danger">Deleted</Pill> : <StatusPill value={t.status} />} {t.isVerified ? <Pill tone="success">Verified</Pill> : <Pill tone="warning">Not verified</Pill>}</span>}
         description={<>{titleCase(t.tenantType)} · joined {dateOnly(t.createdAt)} · <Mono>{t.id}</Mono></>}
-        actions={<AccountActions kind="tenants" id={id} suspended={suspended} openBookings={q.data.openBookings.length} />}
+        actions={t.deletedAt ? undefined : <AccountActions kind="tenants" id={id} suspended={suspended} openBookings={q.data.openBookings.length} />}
       />
+      {t.deletedAt && <DeletedBanner who="This vendor" deletedAt={t.deletedAt} purgedAt={t.purgedAt} wipeDueAt={q.data.wipeDueAt} />}
       {suspended && <div className="rise mb-5 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">Suspended {dateTime(t.suspendedAt)}: {t.suspendReason}. Their cars are hidden from the marketplace.</div>}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
@@ -113,12 +115,12 @@ function Vendor() {
                   <TableBody>
                     {q.data.staff.map((s) => (
                       <TableRow key={s.id}>
-                        <TableCell>{s.fullName}<p className="text-xs text-muted-foreground">{s.email}</p></TableCell>
+                        <TableCell>{s.fullName}<p className="text-xs text-muted-foreground">{s.email.endsWith('@deleted.invalid') ? 'Details wiped' : s.email}</p></TableCell>
                         <TableCell>{titleCase(s.role ?? '')}</TableCell>
                         <TableCell className="text-xs">{dateTime(s.lastLoginAt)}</TableCell>
-                        <TableCell>{s.disabledByPlatformAt ? <Pill tone="danger">Disabled by AutoVogue</Pill> : s.isBlocked ? <Pill tone="danger">Blocked</Pill> : <Pill tone="success">Active</Pill>}</TableCell>
+                        <TableCell>{s.deletedAt ? <Pill tone="danger">Deleted {dateOnly(s.deletedAt)}</Pill> : s.disabledByPlatformAt ? <Pill tone="danger">Disabled by AutoVogue</Pill> : s.isBlocked ? <Pill tone="danger">Blocked</Pill> : <Pill tone="success">Active</Pill>}</TableCell>
                         <TableCell className="text-right">
-                          {can('accounts.suspend') && (
+                          {can('accounts.suspend') && !s.deletedAt && (
                             <Button size="sm" variant="ghost" onClick={() => setDialog({ staffId: s.id, disabled: !s.disabledByPlatformAt, name: s.fullName })}>
                               {s.disabledByPlatformAt ? 'Enable' : 'Disable'}
                             </Button>
@@ -131,7 +133,7 @@ function Vendor() {
                         <TableCell>{d.fullName}<p className="text-xs text-muted-foreground">Driver</p></TableCell>
                         <TableCell>Driver</TableCell>
                         <TableCell>-</TableCell>
-                        <TableCell><StatusPill value={d.verificationStatus === 'VERIFIED' ? 'verified' : d.verificationStatus === 'SUSPENDED' ? 'suspended' : 'pending'} label={titleCase(d.verificationStatus)} /></TableCell>
+                        <TableCell>{d.deletedAt ? <Pill tone="danger">Deleted {dateOnly(d.deletedAt)}</Pill> : <StatusPill value={d.verificationStatus === 'VERIFIED' ? 'verified' : d.verificationStatus === 'SUSPENDED' ? 'suspended' : 'pending'} label={titleCase(d.verificationStatus)} />}</TableCell>
                         <TableCell />
                       </TableRow>
                     ))}

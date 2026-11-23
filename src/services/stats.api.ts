@@ -9,8 +9,8 @@ import { get } from './request'
 const stats = <T,>(key: string, endpoint: string) => () =>
   useQuery({ queryKey: [key, 'stats'], queryFn: () => get<T>(`${endpoint}/stats`), staleTime: 30_000 })
 
-export interface UserStats { total: number; verified: number; notVerified: number; suspended: number; newThisWeek: number }
-export interface TenantStats { total: number; fleetPartners: number; individualHosts: number; verified: number; notVerified: number; active: number; suspended: number }
+export interface UserStats { total: number; verified: number; notVerified: number; suspended: number; newThisWeek: number; deleted: number }
+export interface TenantStats { total: number; fleetPartners: number; individualHosts: number; verified: number; notVerified: number; active: number; suspended: number; deleted: number }
 export interface BookingStats {
   total: number
   pendingPayment: number

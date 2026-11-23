@@ -6,15 +6,16 @@ import { Pill } from '@/components/common/status'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useUsers } from '@/services/people/people.api'
+import { useUsers, type AccountFilter } from '@/services/people/people.api'
 import { useUserStats } from '@/services/stats.api'
 import { StatCards } from '@/components/common/stat-cards'
 import { dateOnly } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/people/users/')({
-  validateSearch: (s: Record<string, unknown>): { q?: string; verified?: string; suspended?: boolean } => ({
+  validateSearch: (s: Record<string, unknown>): { q?: string; verified?: string; suspended?: boolean; account?: AccountFilter } => ({
     q: typeof s.q === 'string' ? s.q : undefined, verified: typeof s.verified === 'string' ? s.verified : undefined,
     suspended: s.suspended === true || s.suspended === 'true' ? true : undefined,
+    account: s.account === 'deleted' || s.account === 'all' ? s.account : undefined,
   }),
   component: Users,
 })
@@ -32,11 +33,12 @@ function Users() {
       <StatCards
         loading={stats.isLoading}
         items={[
-          { key: 'all', label: 'All users', value: stats.data?.total, active: !f.verified && !f.suspended, onClick: () => nav({ search: { q: f.q } }) },
-          { key: 'verified', label: 'Verified', value: stats.data?.verified, active: f.verified === 'true' && !f.suspended, onClick: () => nav({ search: { q: f.q, verified: 'true' } }) },
-          { key: 'not-verified', label: 'Not verified', value: stats.data?.notVerified, active: f.verified === 'false' && !f.suspended, onClick: () => nav({ search: { q: f.q, verified: 'false' } }) },
-          { key: 'suspended', label: 'Suspended', value: stats.data?.suspended, tone: 'danger', active: !!f.suspended, onClick: () => nav({ search: { q: f.q, suspended: true } }) },
+          { key: 'all', label: 'All users', value: stats.data?.total, active: !f.verified && !f.suspended && !f.account, onClick: () => nav({ search: { q: f.q } }) },
+          { key: 'verified', label: 'Verified', value: stats.data?.verified, active: f.verified === 'true' && !f.suspended && !f.account, onClick: () => nav({ search: { q: f.q, verified: 'true' } }) },
+          { key: 'not-verified', label: 'Not verified', value: stats.data?.notVerified, active: f.verified === 'false' && !f.suspended && !f.account, onClick: () => nav({ search: { q: f.q, verified: 'false' } }) },
+          { key: 'suspended', label: 'Suspended', value: stats.data?.suspended, tone: 'danger', active: !!f.suspended && !f.account, onClick: () => nav({ search: { q: f.q, suspended: true } }) },
           { key: 'new', label: 'Joined this week', value: stats.data?.newThisWeek },
+          { key: 'deleted', label: 'Deleted accounts', value: stats.data?.deleted, active: f.account === 'deleted', onClick: () => nav({ search: { q: f.q, account: 'deleted' } }) },
         ]}
       />
       <Panel flush>
@@ -50,6 +52,11 @@ function Users() {
             <NativeSelectOption value="true">Verified</NativeSelectOption>
             <NativeSelectOption value="false">Not verified</NativeSelectOption>
           </NativeSelect>
+          <NativeSelect aria-label="Live or deleted accounts" value={f.account ?? ''} onChange={(e) => nav({ search: { ...f, account: (e.target.value || undefined) as AccountFilter | undefined } })} className="w-44">
+            <NativeSelectOption value="">Live accounts</NativeSelectOption>
+            <NativeSelectOption value="deleted">Deleted accounts</NativeSelectOption>
+            <NativeSelectOption value="all">Live and deleted</NativeSelectOption>
+          </NativeSelect>
         </Filters>
         {q.isLoading ? <Rows /> : rows.length === 0 ? <Empty title="No users found" /> : (
           <Table>
@@ -58,10 +65,10 @@ function Users() {
               {rows.map((u) => (
                 <TableRow key={u.id} className="cursor-pointer" onClick={() => nav({ to: '/people/users/$id', params: { id: u.id } })}>
                   <TableCell className="font-medium">{u.firstName} {u.lastName}</TableCell>
-                  <TableCell className="text-sm">{u.email}</TableCell>
+                  <TableCell className="text-sm">{u.purgedAt ? <span className="text-muted-foreground">Details wiped</span> : u.email}</TableCell>
                   <TableCell className="font-mono text-xs">{u.countryDialCode}{u.phoneNumber}</TableCell>
                   <TableCell>{u.isVerified ? <Pill tone="success">Verified</Pill> : <Pill>Not verified</Pill>}</TableCell>
-                  <TableCell>{u.suspendedAt ? <Pill tone="danger">Suspended</Pill> : !u.isActivated ? <Pill tone="warning">Not activated</Pill> : <Pill tone="success">Active</Pill>}</TableCell>
+                  <TableCell>{u.deletedAt ? <Pill tone="danger">Deleted {dateOnly(u.deletedAt)}</Pill> : u.suspendedAt ? <Pill tone="danger">Suspended</Pill> : !u.isActivated ? <Pill tone="warning">Not activated</Pill> : <Pill tone="success">Active</Pill>}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{dateOnly(u.createdAt)}</TableCell>
                 </TableRow>
               ))}

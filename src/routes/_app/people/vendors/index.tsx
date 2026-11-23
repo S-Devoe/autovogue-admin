@@ -6,15 +6,16 @@ import { Pill, StatusPill } from '@/components/common/status'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useTenants } from '@/services/people/people.api'
+import { useTenants, type AccountFilter } from '@/services/people/people.api'
 import { useTenantStats } from '@/services/stats.api'
 import { StatCards } from '@/components/common/stat-cards'
 import { dateOnly, titleCase } from '@/lib/format'
 
 export const Route = createFileRoute('/_app/people/vendors/')({
-  validateSearch: (s: Record<string, unknown>): { q?: string; type?: string; status?: string; verified?: string } => ({
+  validateSearch: (s: Record<string, unknown>): { q?: string; type?: string; status?: string; verified?: string; account?: AccountFilter } => ({
     q: typeof s.q === 'string' ? s.q : undefined, type: typeof s.type === 'string' ? s.type : undefined, status: typeof s.status === 'string' ? s.status : undefined,
     verified: s.verified === 'true' || s.verified === 'false' ? s.verified : undefined,
+    account: s.account === 'deleted' || s.account === 'all' ? s.account : undefined,
   }),
   component: Vendors,
 })
@@ -32,13 +33,14 @@ function Vendors() {
       <StatCards
         loading={stats.isLoading}
         items={[
-          { key: 'all', label: 'All vendors', value: stats.data?.total, active: !f.type && !f.status && !f.verified, onClick: () => nav({ search: { q: f.q } }) },
+          { key: 'all', label: 'All vendors', value: stats.data?.total, active: !f.type && !f.status && !f.verified && !f.account, onClick: () => nav({ search: { q: f.q } }) },
           { key: 'fleet', label: 'Fleet partners', value: stats.data?.fleetPartners, active: f.type === 'fleet_partner', onClick: () => nav({ search: { ...f, type: 'fleet_partner' } }) },
           { key: 'hosts', label: 'Individual hosts', value: stats.data?.individualHosts, active: f.type === 'independent_host', onClick: () => nav({ search: { ...f, type: 'independent_host' } }) },
           { key: 'verified', label: 'Verified', value: stats.data?.verified, active: f.verified === 'true', onClick: () => nav({ search: { ...f, verified: 'true' } }) },
           { key: 'not-verified', label: 'Not verified', value: stats.data?.notVerified, tone: 'warning', active: f.verified === 'false', onClick: () => nav({ search: { ...f, verified: 'false' } }) },
           { key: 'active', label: 'Active', value: stats.data?.active, active: f.status === 'active', onClick: () => nav({ search: { ...f, status: 'active' } }) },
           { key: 'suspended', label: 'Suspended', value: stats.data?.suspended, tone: 'danger', active: f.status === 'suspended', onClick: () => nav({ search: { ...f, status: 'suspended' } }) },
+          { key: 'deleted', label: 'Deleted accounts', value: stats.data?.deleted, active: f.account === 'deleted', onClick: () => nav({ search: { q: f.q, account: 'deleted' } }) },
         ]}
       />
       <Panel flush>
@@ -57,6 +59,11 @@ function Vendors() {
             <NativeSelectOption value="active">Active</NativeSelectOption>
             <NativeSelectOption value="suspended">Suspended</NativeSelectOption>
           </NativeSelect>
+          <NativeSelect aria-label="Live or deleted accounts" value={f.account ?? ''} onChange={(e) => nav({ search: { ...f, account: (e.target.value || undefined) as AccountFilter | undefined } })} className="w-44">
+            <NativeSelectOption value="">Live accounts</NativeSelectOption>
+            <NativeSelectOption value="deleted">Deleted accounts</NativeSelectOption>
+            <NativeSelectOption value="all">Live and deleted</NativeSelectOption>
+          </NativeSelect>
         </Filters>
         {q.isLoading ? <Rows /> : rows.length === 0 ? <Empty title="No vendors found" /> : (
           <Table>
@@ -66,9 +73,9 @@ function Vendors() {
                 <TableRow key={t.id} className="cursor-pointer" onClick={() => nav({ to: '/people/vendors/$id', params: { id: t.id } })}>
                   <TableCell className="font-medium">{t.name || '-'}</TableCell>
                   <TableCell className="text-sm">{titleCase(t.tenantType)}</TableCell>
-                  <TableCell className="text-sm">{t.ownerEmail || '-'}</TableCell>
+                  <TableCell className="text-sm">{t.purgedAt ? <span className="text-muted-foreground">Details wiped</span> : t.ownerEmail || '-'}</TableCell>
                   <TableCell>{t.isVerified ? <Pill tone="success">Verified</Pill> : <Pill tone="warning">{titleCase(t.verificationStatus || 'unverified')}</Pill>}</TableCell>
-                  <TableCell><StatusPill value={t.status} /></TableCell>
+                  <TableCell>{t.deletedAt ? <Pill tone="danger">Deleted {dateOnly(t.deletedAt)}</Pill> : <StatusPill value={t.status} />}</TableCell>
                   <TableCell className="text-right tabular">{t.vehicleCount}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{dateOnly(t.createdAt)}</TableCell>
                 </TableRow>

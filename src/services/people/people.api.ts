@@ -18,7 +18,14 @@ export interface UserRow {
   isVerified: boolean
   suspendedAt: string | null
   createdAt: string
+  /** Set when the user deleted their account. */
+  deletedAt: string | null
+  /** Set once their personal details were wiped (after the retention period). */
+  purgedAt: string | null
 }
+
+/** Which accounts a list shows: live ones (default), deleted, or both. */
+export type AccountFilter = 'deleted' | 'all'
 
 export interface TenantRow {
   id: string
@@ -32,6 +39,8 @@ export interface TenantRow {
   verificationStatus: string
   ownerEmail: string
   vehicleCount: number
+  deletedAt: string | null
+  purgedAt: string | null
 }
 
 const paged = <T,>(key: string, url: string, f: Record<string, unknown>) =>
@@ -42,8 +51,8 @@ const paged = <T,>(key: string, url: string, f: Record<string, unknown>) =>
     getNextPageParam: (p: Paged<T>) => p.nextCursor || undefined,
   }) as const
 
-export const useUsers = (f: { q?: string; verified?: string; suspended?: boolean }) => useInfiniteQuery(paged<UserRow>(QUERY_KEYS.USERS, API_ENDPOINTS.USERS, f))
-export const useTenants = (f: { q?: string; type?: string; status?: string; verified?: string }) => useInfiniteQuery(paged<TenantRow>(QUERY_KEYS.TENANTS, API_ENDPOINTS.TENANTS, f))
+export const useUsers = (f: { q?: string; verified?: string; suspended?: boolean; account?: AccountFilter }) => useInfiniteQuery(paged<UserRow>(QUERY_KEYS.USERS, API_ENDPOINTS.USERS, f))
+export const useTenants = (f: { q?: string; type?: string; status?: string; verified?: string; account?: AccountFilter }) => useInfiniteQuery(paged<TenantRow>(QUERY_KEYS.TENANTS, API_ENDPOINTS.TENANTS, f))
 
 export interface AccountDoc {
   id: string
@@ -73,6 +82,8 @@ export interface UserProfile {
   recentBookings: BookingRow[]
   notes: Note[]
   openBookings: OpenBooking[]
+  /** Deleted, not yet wiped: when the personal details are wiped. */
+  wipeDueAt?: string
 }
 
 export interface TenantProfile {
@@ -88,13 +99,14 @@ export interface TenantProfile {
   verifiedLegalName?: string
   settlementNameMatches?: boolean
   documents: AccountDoc[]
-  staff: { id: string; email: string; fullName: string; role: string | null; isActivated: boolean | null; isBlocked: boolean | null; lastLoginAt: string | null; disabledByPlatformAt: string | null }[]
-  drivers: { id: string; fullName: string; verificationStatus: string; isActive: boolean }[]
+  staff: { id: string; email: string; fullName: string; role: string | null; isActivated: boolean | null; isBlocked: boolean | null; lastLoginAt: string | null; disabledByPlatformAt: string | null; deletedAt: string | null }[]
+  drivers: { id: string; fullName: string; verificationStatus: string; isActive: boolean; deletedAt: string | null }[]
   vehicles: { id: string; make: string; model: string; year: number; licensePlate: string; status: string; isBookable: boolean; takenDownAt: string | null }[]
   recentBookings: BookingRow[]
   payouts: PayoutRow[]
   notes: Note[]
   openBookings: OpenBooking[]
+  wipeDueAt?: string
 }
 
 export const useUser = (id: string) => useQuery({ queryKey: [QUERY_KEYS.USER, id], queryFn: () => get<UserProfile>(API_ENDPOINTS.user(id)) })
