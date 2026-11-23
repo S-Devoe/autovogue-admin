@@ -198,6 +198,11 @@ export interface PlatformBalances {
   paystackReady?: number | null
   /** heldAtPaystack minus paystackReady: payments Paystack hasn't settled yet. Below zero: Paystack holds more than our records. */
   paystackSettling?: number | null
+  /**
+   * How far paystackReady is below what Paystack should hold for vendors, users and FIRS by now
+   * (money paid in over 36 hours ago). Above zero: money left Paystack, usually settled to the bank.
+   */
+  paystackShortfall?: number | null
   /** Withdrawals reserved but waiting for Paystack to settle before they're sent. */
   withdrawalsWaiting?: number
   withdrawalsWaitingCount?: number

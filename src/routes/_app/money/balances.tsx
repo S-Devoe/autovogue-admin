@@ -192,6 +192,7 @@ function UnpaidCheckouts({ b }: { b: PlatformBalances }) {
 function PaystackNow({ b }: { b: PlatformBalances }) {
   const ready = b.paystackReady
   const settling = b.paystackSettling ?? null
+  const short = b.paystackShortfall ?? 0
   const wCount = b.withdrawalsWaitingCount ?? 0
   const cCount = b.commissionWaitingCount ?? 0
   return (
@@ -208,7 +209,17 @@ function PaystackNow({ b }: { b: PlatformBalances }) {
             </div>
             <span className="shrink-0 font-semibold tabular">{n(ready)}</span>
           </div>
-          {settling != null && settling >= 0 && (
+          {short > 0 && (
+            <div className="my-2 rounded-md border border-danger/40 bg-danger-soft p-3 text-xs">
+              <p className="font-medium text-danger">{n(short)} missing from Paystack</p>
+              <p className="mt-1 text-muted-foreground">
+                Paystack should hold this for vendors, users and FIRS by now (it was paid in over 36 hours ago), but it isn&apos;t in the
+                balance. Paystack may be settling your balance to your bank account. Top up the Paystack balance so withdrawals can go out,
+                and ask Paystack to keep collections in the balance.
+              </p>
+            </div>
+          )}
+          {short <= 0 && settling != null && settling >= 0 && (
             <div className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <p className="font-medium">Still settling</p>
